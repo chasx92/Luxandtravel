@@ -25,10 +25,180 @@ const IconShield = ({ style }: { style?: React.CSSProperties }) => (
     </svg>
 );
 
+const IconLock = ({ style }: { style?: React.CSSProperties }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+);
+
 const IconArrowRight = ({ style }: { style?: React.CSSProperties }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
         <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
     </svg>
+);
+
+const PaymentBadges = () => {
+    const badges = [
+        {
+            label: 'Visa',
+            src: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
+            height: 16,
+        },
+        {
+            label: 'Mastercard',
+            src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
+            height: 24,
+        },
+        {
+            label: 'Discover',
+            src: 'https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg',
+            height: 18,
+        },
+        {
+            label: 'American Express',
+            src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg',
+            height: 18,
+        },
+    ];
+
+    return (
+        <div style={{
+            marginTop: '1rem',
+            paddingTop: '1rem',
+            borderTop: '1px solid rgba(148,163,184,0.18)',
+        }}>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.6rem',
+                color: '#6b7280',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+                textAlign: 'center',
+                marginBottom: '0.75rem',
+            }}>
+                <IconLock style={{ width: '1.1rem', height: '1.1rem', color: '#a1a1aa', flexShrink: 0 }} />
+                <span>Paiement securise via Stripe</span>
+            </div>
+            <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: '0.7rem',
+            }}>
+                {badges.map((badge) => (
+                    <div
+                        key={badge.label}
+                        aria-label={`${badge.label} accepted`}
+                        style={{
+                            minWidth: '86px',
+                            height: '44px',
+                            padding: '0 0.7rem',
+                            borderRadius: '0.55rem',
+                            background: '#ffffff',
+                            border: '1px solid rgba(15,23,42,0.16)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 5px 14px rgba(15,23,42,0.06)',
+                        }}
+                    >
+                        <img src={badge.src} alt={badge.label} style={{ height: `${badge.height}px`, width: 'auto', maxWidth: '74px', objectFit: 'contain' }} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const OrderSummary = ({
+    selectedPlan,
+    serviceId,
+}: {
+    selectedPlan: 'subscription' | 'single';
+    serviceId: string;
+}) => {
+    const serviceConfig = getPaymentConfig(serviceId);
+    const isSubscription = selectedPlan === 'subscription';
+    const originalPrice = isSubscription ? SUBSCRIPTION_CONFIG.originalPrice : serviceConfig.singleReportOriginalPrice;
+    const total = isSubscription ? SUBSCRIPTION_CONFIG.price : serviceConfig.singleReportPrice;
+    const discount = Math.max(originalPrice - total, 0);
+    const discountPercent = Math.round((discount / originalPrice) * 100);
+    const planLabel = isSubscription ? 'All-Access monthly pass' : serviceConfig.singleReportName.replace(/[^\w\s-]/g, '').trim();
+    const formatPrice = (price: number) => `${price.toFixed(2).replace('.', ',')}€`;
+
+    return (
+        <div style={{
+            marginTop: '1rem',
+            background: '#ffffff',
+            color: '#0f172a',
+            borderRadius: '1rem',
+            padding: '1rem 1rem 1.05rem',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 10px 30px rgba(15,23,42,0.08)',
+        }}>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '1rem',
+                marginBottom: '0.9rem',
+            }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Order summary</h3>
+                <span style={{
+                    padding: '0.28rem 0.55rem',
+                    borderRadius: '999px',
+                    background: '#ecfdf5',
+                    color: '#047857',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    whiteSpace: 'nowrap',
+                }}>
+                    {discountPercent}% OFF
+                </span>
+            </div>
+
+            <div style={{ display: 'grid', gap: '0.65rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#334155' }}>
+                    <span>{planLabel}</span>
+                    <span style={{ fontWeight: 700 }}>{formatPrice(originalPrice)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#047857' }}>
+                    <span>Limited-time discount</span>
+                    <span style={{ fontWeight: 800 }}>-{formatPrice(discount)}</span>
+                </div>
+            </div>
+
+            <div style={{
+                height: '1px',
+                background: '#e2e8f0',
+                margin: '1rem 0',
+            }} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '1rem' }}>
+                <span style={{ fontSize: '1rem', fontWeight: 800 }}>Total today</span>
+                <span style={{ fontSize: '1.45rem', fontWeight: 900 }}>{formatPrice(total)}</span>
+            </div>
+        </div>
+    );
+};
+
+const LegalAgreement = () => (
+    <p style={{
+        textAlign: 'center',
+        fontSize: '0.75rem',
+        color: 'rgba(255,255,255,0.82)',
+        lineHeight: 1.6,
+        margin: '0.9rem auto 0',
+        maxWidth: '620px',
+    }}>
+        By clicking "Unlock Results", you agree to our{' '}
+        <a href="/terms" style={{ color: '#ffffff', fontWeight: 800, textDecoration: 'underline' }}>Terms of Service</a>
+        {' '}and{' '}
+        <a href="/privacy" style={{ color: '#ffffff', fontWeight: 800, textDecoration: 'underline' }}>Privacy Policy</a>.
+    </p>
 );
 
 // WebGL Background
@@ -145,6 +315,13 @@ export function PaymentPage() {
     const [selectedPlan, setSelectedPlan] = useState<'subscription' | 'single'>('subscription');
     const [isProcessing, setIsProcessing] = useState(false);
 
+    useEffect(() => {
+        const planParam = searchParams?.get('plan');
+        if (planParam === 'single' || planParam === 'subscription') {
+            setSelectedPlan(planParam);
+        }
+    }, [searchParams]);
+
     // Get the preview component for current service
     const PreviewComponent = PreviewComponents[activeService] || DatingResultsPreview;
 
@@ -237,9 +414,9 @@ export function PaymentPage() {
 
                 {/* Main Content */}
                 <div style={{
-                    maxWidth: '960px',
-                    margin: '0.5rem auto',
-                    padding: '0 1rem',
+                    maxWidth: '760px',
+                    margin: '0.5rem auto 0',
+                    padding: '0 1rem 2rem',
                     position: 'relative',
                     zIndex: 20,
                 }}>
@@ -326,6 +503,8 @@ export function PaymentPage() {
                                 onPlanSelect={setSelectedPlan}
                             />
 
+                            <OrderSummary selectedPlan={selectedPlan} serviceId={activeService} />
+
                             <motion.button
                                 id="outer-checkout-button-mobile"
                                 whileTap={{ scale: 0.98 }}
@@ -354,19 +533,23 @@ export function PaymentPage() {
                             >
                                 {isProcessing ? 'Processing...' : (
                                     <>
-                                        🔒 {selectedPlan === 'subscription' ? 'Unlock All Now' : `Unlock ${config.title}`} {selectedPlan === 'subscription'
+                                        <IconLock style={{ width: '1rem', height: '1rem' }} />
+                                        {selectedPlan === 'subscription' ? 'Unlock Results' : `Unlock ${config.title}`} {selectedPlan === 'subscription'
                                             ? `${formatPrice(SUBSCRIPTION_CONFIG.price)}€/mo`
                                             : `${formatPrice(config.singleReportPrice)}€`
                                         }
                                     </>
                                 )}
                             </motion.button>
+
+                            <PaymentBadges />
+                            <LegalAgreement />
                         </motion.div>
                     </div>
 
-                    {/* Desktop Layout: Two columns */}
-                    <div className="hidden lg:grid" style={{ gridTemplateColumns: '1fr 400px', gap: '1.5rem', alignItems: 'start' }}>
-                        {/* Left: Preview */}
+                    {/* Desktop layout: centered checkout flow */}
+                    <div className="hidden lg:flex" style={{ flexDirection: 'column', gap: '1.25rem', alignItems: 'center' }}>
+                        {/* Preview */}
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -378,6 +561,7 @@ export function PaymentPage() {
                                 boxShadow: '0 25px 60px -15px rgba(0,0,0,0.3)',
                                 overflow: 'hidden',
                                 padding: '1.5rem',
+                                width: '100%',
                             }}
                         >
                             {activeService !== 'dating' && (
@@ -439,7 +623,7 @@ export function PaymentPage() {
                             </div>
                         </motion.div>
 
-                        {/* Right: Pricing */}
+                        {/* Pricing */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -451,6 +635,7 @@ export function PaymentPage() {
                                 boxShadow: '0 25px 60px -15px rgba(0,0,0,0.3)',
                                 overflow: 'hidden',
                                 padding: '1.5rem',
+                                width: '100%',
                             }}
                         >
                             {selectedPlan === 'subscription' && (
@@ -462,6 +647,8 @@ export function PaymentPage() {
                                 selectedPlan={selectedPlan}
                                 onPlanSelect={setSelectedPlan}
                             />
+
+                            <OrderSummary selectedPlan={selectedPlan} serviceId={activeService} />
 
                             <motion.button
                                 id="outer-checkout-button"
@@ -508,7 +695,8 @@ export function PaymentPage() {
                                     </>
                                 ) : (
                                     <>
-                                        🔒 {selectedPlan === 'subscription' ? 'Unlock All Now' : `Unlock ${config.title}`} {selectedPlan === 'subscription'
+                                        <IconLock style={{ width: '1rem', height: '1rem' }} />
+                                        {selectedPlan === 'subscription' ? 'Unlock Results' : `Unlock ${config.title}`} {selectedPlan === 'subscription'
                                             ? `${formatPrice(SUBSCRIPTION_CONFIG.price)}€/mo`
                                             : `${formatPrice(config.singleReportPrice)}€`
                                         }
@@ -529,20 +717,10 @@ export function PaymentPage() {
                                 }
                             </p>
 
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '1rem',
-                                marginTop: '1rem',
-                                paddingTop: '1rem',
-                                borderTop: '1px solid #f3f4f6',
-                            }}>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" style={{ height: '18px', opacity: 0.4 }} />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" style={{ height: '14px', opacity: 0.4 }} />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style={{ height: '18px', opacity: 0.4 }} />
-                            </div>
+                            <PaymentBadges />
                         </motion.div>
+
+                        <LegalAgreement />
                     </div>
                 </div>
             </div>

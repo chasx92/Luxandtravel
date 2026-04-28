@@ -138,6 +138,56 @@ export function HowItWorks() {
     { text: 'New Photo', color: colors.rose500 },
     { text: 'Location Change', color: colors.orange500 },
   ];
+  const toolkitThemes = {
+    allAccess: {
+      background: 'radial-gradient(circle at 12% 10%, rgba(255,78,113,0.34), transparent 34%), radial-gradient(circle at 78% 8%, rgba(59,130,246,0.28), transparent 31%), radial-gradient(circle at 88% 84%, rgba(139,92,246,0.24), transparent 32%), linear-gradient(135deg, #070a18 0%, #111827 52%, #090b16 100%)',
+      accent: '#ff4e71',
+      soft: '#fecdd3',
+    },
+    dating: {
+      background: 'radial-gradient(circle at 18% 10%, rgba(255,78,113,0.24), transparent 34%), radial-gradient(circle at 86% 86%, rgba(255,127,102,0.18), transparent 34%), linear-gradient(135deg, #2a0713 0%, #451025 50%, #111827 100%)',
+      border: 'rgba(255,78,113,0.32)',
+      iconBg: 'rgba(255,78,113,0.16)',
+      iconBorder: 'rgba(255,78,113,0.28)',
+      accent: '#ff4e71',
+      accent2: '#ff7f66',
+      soft: '#fda4af',
+    },
+    faceTrace: {
+      background: 'radial-gradient(circle at 15% 8%, rgba(59,130,246,0.28), transparent 34%), radial-gradient(circle at 85% 82%, rgba(96,165,250,0.18), transparent 34%), linear-gradient(135deg, #082f49 0%, #0f172a 100%)',
+      border: 'rgba(96,165,250,0.34)',
+      iconBg: 'rgba(59,130,246,0.16)',
+      iconBorder: 'rgba(96,165,250,0.34)',
+      accent: '#60a5fa',
+      soft: '#bfdbfe',
+    },
+    radar: {
+      background: 'linear-gradient(135deg, #f8fbff 0%, #fff7fb 100%)',
+      border: '#dbeafe',
+      accent: '#3b82f6',
+      accent2: '#ff4e71',
+      soft: '#eff6ff',
+    },
+    fidelity: {
+      background: 'radial-gradient(circle at 14% 8%, rgba(236,72,153,0.30), transparent 34%), radial-gradient(circle at 86% 86%, rgba(244,114,182,0.18), transparent 34%), linear-gradient(135deg, #500724 0%, #831843 56%, #1f1020 100%)',
+      border: 'rgba(244,114,182,0.34)',
+      accent: '#f472b6',
+      soft: '#fbcfe8',
+    },
+    following: {
+      background: 'radial-gradient(circle at 12% 8%, rgba(167,139,250,0.30), transparent 35%), radial-gradient(circle at 84% 82%, rgba(139,92,246,0.22), transparent 34%), linear-gradient(135deg, #2e1065 0%, #5b21b6 54%, #111827 100%)',
+      border: 'rgba(167,139,250,0.34)',
+      accent: '#a78bfa',
+      soft: '#ddd6fe',
+    },
+  };
+  const allAccessTools = [
+    { label: 'Dating Search', icon: Heart, accent: toolkitThemes.dating.accent, bg: 'rgba(255,78,113,0.12)', border: 'rgba(255,78,113,0.22)' },
+    { label: 'Face Trace', icon: ScanFace, accent: toolkitThemes.faceTrace.accent, bg: 'rgba(96,165,250,0.12)', border: 'rgba(96,165,250,0.22)' },
+    { label: 'Following AI', icon: Users, accent: toolkitThemes.following.accent, bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.22)' },
+    { label: 'Fidelity Test', icon: MessageSquare, accent: toolkitThemes.fidelity.accent, bg: 'rgba(244,114,182,0.12)', border: 'rgba(244,114,182,0.22)' },
+    { label: '24/7 Radar', icon: Radar, accent: toolkitThemes.radar.accent, bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.22)' },
+  ];
 
   return (
     <section id="how-it-works" className="max-w-[1760px] mx-auto px-4 md:px-8 py-12 md:py-16 bg-gradient-to-b from-white via-gray-50/50 to-white">
@@ -415,7 +465,7 @@ export function HowItWorks() {
             viewport={{ once: true }}
             className="md:col-span-2 lg:col-span-4"
             style={{
-              background: 'radial-gradient(circle at 15% 10%, rgba(255,77,109,0.36), transparent 34%), radial-gradient(circle at 86% 5%, rgba(37,99,235,0.26), transparent 32%), linear-gradient(135deg, #070a18 0%, #12162a 48%, #090b16 100%)',
+              background: toolkitThemes.allAccess.background,
               color: 'white',
               borderRadius: 'clamp(1.25rem, 4vw, 1.75rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
@@ -427,28 +477,22 @@ export function HowItWorks() {
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(280px, 0.9fr)', gap: '1rem', alignItems: 'stretch' }} className="max-lg:!grid-cols-1">
               <div className="p-0 sm:p-2">
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 0.75rem', borderRadius: '999px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.14)', color: '#fecdd3', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.45rem 0.75rem', borderRadius: '999px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.14)', color: toolkitThemes.allAccess.soft, fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '1rem' }}>
                   <Sparkles style={{ width: '0.9rem', height: '0.9rem' }} />
                   All Access
                 </div>
                 <h4 className="text-balance text-[1.45rem] font-black leading-[1.08] tracking-[-0.04em] sm:text-[2rem] lg:text-[2.35rem]" style={{ marginBottom: '0.75rem' }}>
-                  Everything You Need to <span className="inline italic" style={{ color: '#fb7185' }}>Uncover the Truth</span>
+                  Everything You Need to <span className="inline italic" style={{ color: toolkitThemes.allAccess.accent }}>Uncover the Truth</span>
                 </h4>
                 <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: '0.95rem', lineHeight: 1.65, maxWidth: '42rem' }}>
                   A complete toolkit to investigate relationship doubts with AI-powered precision, combining Dating Search, Face Trace, Following AI, Fidelity Test and 24/7 Radar in one recurring access.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginTop: '1.25rem' }}>
-                  {[
-                    { label: 'Dating Search', icon: Heart },
-                    { label: 'Face Trace', icon: ScanFace },
-                    { label: 'Following AI', icon: Users },
-                    { label: 'Fidelity Test', icon: MessageSquare },
-                    { label: '24/7 Radar', icon: Radar },
-                  ].map((tool) => {
+                  {allAccessTools.map((tool) => {
                     const Icon = tool.icon;
                     return (
-                      <span key={tool.label} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.55rem 0.7rem', borderRadius: '999px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.88)', fontSize: '0.75rem', fontWeight: 800 }}>
-                        <Icon style={{ width: '0.9rem', height: '0.9rem', color: '#fb7185' }} />
+                      <span key={tool.label} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.55rem 0.7rem', borderRadius: '999px', background: tool.bg, border: `1px solid ${tool.border}`, color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem', fontWeight: 800 }}>
+                        <Icon style={{ width: '0.9rem', height: '0.9rem', color: tool.accent }} />
                         {tool.label}
                       </span>
                     );
@@ -457,7 +501,7 @@ export function HowItWorks() {
               </div>
               <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '1.35rem', padding: '1rem', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fecdd3', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Live signal dashboard</span>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 900, color: toolkitThemes.allAccess.soft, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Live signal dashboard</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', fontWeight: 800, color: '#bbf7d0' }}><span style={{ width: '7px', height: '7px', borderRadius: '999px', background: '#22c55e' }} />Active</span>
                 </div>
                 <div style={{ display: 'grid', gap: '0.65rem' }}>
@@ -485,12 +529,12 @@ export function HowItWorks() {
             transition={{ delay: 0.05 }}
             className="md:col-span-2 lg:col-span-2"
             style={{
-              background: 'linear-gradient(135deg, #0f172a 0%, #1b2440 100%)',
+              background: toolkitThemes.dating.background,
               color: 'white',
               borderRadius: 'clamp(1.25rem, 4vw, 1.5rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
-              boxShadow: '0 24px 52px rgba(15,23,42,0.22)',
-              border: '1px solid rgba(148,163,184,0.32)',
+              boxShadow: '0 24px 52px rgba(255,78,113,0.18)',
+              border: `1px solid ${toolkitThemes.dating.border}`,
               position: 'relative',
               overflow: 'hidden',
               minHeight: 'clamp(15rem, 44vw, 18rem)',
@@ -499,10 +543,10 @@ export function HowItWorks() {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '0.75rem' }}>
-                  <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(244,63,94,0.16)', border: '1px solid rgba(244,63,94,0.28)' }}>
-                    <Heart style={{ width: '1.25rem', height: '1.25rem', color: '#fb7185' }} />
+                  <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: toolkitThemes.dating.iconBg, border: `1px solid ${toolkitThemes.dating.iconBorder}` }}>
+                    <Heart style={{ width: '1.25rem', height: '1.25rem', color: toolkitThemes.dating.accent }} />
                   </div>
-                  <span style={{ fontSize: '0.76rem', fontWeight: 900, color: '#fda4af', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Dating Search</span>
+                  <span style={{ fontSize: '0.76rem', fontWeight: 900, color: toolkitThemes.dating.soft, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Dating Search</span>
                 </div>
                 <h4 style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '0.4rem' }}>Find hidden Tinder profiles</h4>
                 <p style={{ color: '#cbd5e1', fontSize: '0.88rem', lineHeight: 1.55 }}>Run a targeted Tinder profile search based on name, age and city.</p>
@@ -514,7 +558,7 @@ export function HowItWorks() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem' }} className="max-sm:!grid-cols-1">
               <div style={{ borderRadius: '1.1rem', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', padding: '0.8rem' }}>
                 <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
-                  <img src="/assets/profiles/user-samples/dating-man-sample-03.jpg" alt="Tinder profile search result" style={{ width: '4.2rem', height: '4.2rem', borderRadius: '1rem', objectFit: 'cover', border: '2px solid #fb7185' }} />
+                  <img src="/assets/profiles/user-samples/dating-man-sample-03.jpg" alt="Tinder profile search result" style={{ width: '4.2rem', height: '4.2rem', borderRadius: '1rem', objectFit: 'cover', border: `2px solid ${toolkitThemes.dating.accent}` }} />
                   <div>
                     <div style={{ fontWeight: 900, fontSize: '1rem' }}>Victor, 26</div>
                     <div style={{ color: '#94a3b8', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase' }}>New York • Detected 2m ago</div>
@@ -526,7 +570,7 @@ export function HowItWorks() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '0.45rem', height: '5rem' }}>
                   {barHeights.map((h, i) => (
                     <div key={i} style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'flex-end' }}>
-                      <div style={{ width: '100%', background: 'linear-gradient(to top, #f43f5e, #fb7185)', borderRadius: '4px 4px 0 0', height: `${h}%` }} />
+                      <div style={{ width: '100%', background: `linear-gradient(to top, ${toolkitThemes.dating.accent}, ${toolkitThemes.dating.accent2})`, borderRadius: '4px 4px 0 0', height: `${h}%` }} />
                     </div>
                   ))}
                 </div>
@@ -544,32 +588,32 @@ export function HowItWorks() {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
             style={{
-              background: 'linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)',
+              background: toolkitThemes.faceTrace.background,
               color: 'white',
               borderRadius: 'clamp(1.25rem, 4vw, 1.5rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
-              boxShadow: '0 20px 45px rgba(30,27,75,0.2)',
-              border: '1px solid rgba(59,130,246,0.28)',
+              boxShadow: '0 20px 45px rgba(59,130,246,0.18)',
+              border: `1px solid ${toolkitThemes.faceTrace.border}`,
               position: 'relative',
               overflow: 'hidden',
               minHeight: 'auto',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '0.75rem' }}>
-              <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(14,165,233,0.15)', border: '1px solid rgba(14,165,233,0.35)' }}>
-                <ScanFace style={{ width: '1.35rem', height: '1.35rem', color: '#38bdf8' }} />
+              <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: toolkitThemes.faceTrace.iconBg, border: `1px solid ${toolkitThemes.faceTrace.iconBorder}` }}>
+                <ScanFace style={{ width: '1.35rem', height: '1.35rem', color: toolkitThemes.faceTrace.accent }} />
               </div>
               <div>
                 <h4 style={{ fontSize: '1.15rem', fontWeight: 900, letterSpacing: '-0.02em' }}>Face Trace</h4>
-                <p style={{ color: '#67e8f9', fontSize: '0.74rem', fontWeight: 800 }}>AI face search & reverse image lookup.</p>
+                <p style={{ color: toolkitThemes.faceTrace.soft, fontSize: '0.74rem', fontWeight: 800 }}>AI face search & reverse image lookup.</p>
               </div>
             </div>
 	            <div className="relative aspect-[16/10] min-h-0 overflow-hidden rounded-[1rem] border border-white/10 bg-white/10 sm:rounded-[1.15rem]">
 	              <img src="/assets/profiles/facetrace-source.webp" alt="Reverse image search match" className="block h-full w-full object-cover" style={{ objectPosition: 'center 34%' }} />
-	              <div className="absolute inset-3 rounded-[0.8rem] border-2 border-[#38bdf8] shadow-[0_0_24px_rgba(56,189,248,0.42)]" />
+	              <div className="absolute inset-3 rounded-[0.8rem] border-2 border-[#60a5fa] shadow-[0_0_24px_rgba(96,165,250,0.42)]" />
 	              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between rounded-[0.8rem] border border-white/15 bg-slate-950/75 px-3 py-2 backdrop-blur">
 	                <span className="text-sm font-black">Best Match</span>
-	                <span className="text-base font-black text-[#38bdf8]">92%</span>
+	                <span className="text-base font-black text-[#60a5fa]">92%</span>
 	              </div>
 	            </div>
           </motion.div>
@@ -581,21 +625,21 @@ export function HowItWorks() {
             viewport={{ once: true }}
             transition={{ delay: 0.15 }}
             style={{
-              background: 'linear-gradient(135deg, #fff7ed 0%, #fff1f2 100%)',
+              background: toolkitThemes.radar.background,
               borderRadius: 'clamp(1.25rem, 4vw, 1.5rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
-              boxShadow: '0 20px 42px rgba(244,63,94,0.14)',
-              border: '1px solid #ffe4e6',
+              boxShadow: '0 20px 42px rgba(59,130,246,0.12)',
+              border: `1px solid ${toolkitThemes.radar.border}`,
               position: 'relative',
               overflow: 'hidden',
               minHeight: 'auto',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-              <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: '1px solid #fecdd3', color: colors.rose500, boxShadow: '0 12px 24px rgba(244,63,94,0.12)' }}>
+              <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff', border: `1px solid ${toolkitThemes.radar.border}`, color: toolkitThemes.radar.accent, boxShadow: '0 12px 24px rgba(59,130,246,0.12)' }}>
                 <Bell style={{ width: '1.25rem', height: '1.25rem' }} />
               </div>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', backgroundColor: colors.rose500, color: 'white', fontSize: '9px', fontWeight: 900, padding: '0.3rem 0.55rem', borderRadius: '9999px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', backgroundColor: toolkitThemes.radar.accent, color: 'white', fontSize: '9px', fontWeight: 900, padding: '0.3rem 0.55rem', borderRadius: '9999px' }}>
                 <span style={{ width: '6px', height: '6px', backgroundColor: 'white', borderRadius: '9999px' }} /> LIVE
               </span>
             </div>
@@ -603,8 +647,8 @@ export function HowItWorks() {
             <p style={{ color: '#64748b', fontSize: '0.78rem', marginBottom: '0.85rem', fontWeight: 600 }}>Instant alerts for profile changes.</p>
             <div style={{ display: 'grid', gap: '0.55rem' }}>
               {notifications.map((notif, i) => (
-                <div key={i} style={{ backgroundColor: '#ffffff', border: '1px solid #ffe4e6', padding: '0.65rem', borderRadius: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.65rem', boxShadow: '0 10px 20px rgba(244,63,94,0.06)' }}>
-                  <div style={{ width: '1.7rem', height: '1.7rem', borderRadius: '0.55rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: notif.color, background: '#fff1f2' }}>
+                <div key={i} style={{ backgroundColor: '#ffffff', border: `1px solid ${i === 1 ? '#ffe4e6' : toolkitThemes.radar.border}`, padding: '0.65rem', borderRadius: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.65rem', boxShadow: '0 10px 20px rgba(59,130,246,0.06)' }}>
+                  <div style={{ width: '1.7rem', height: '1.7rem', borderRadius: '0.55rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: i === 1 ? toolkitThemes.radar.accent2 : notif.color, background: i === 1 ? '#fff1f2' : toolkitThemes.radar.soft }}>
                     {i === 0 ? <Activity style={{ width: '0.95rem', height: '0.95rem' }} /> : i === 1 ? <Camera style={{ width: '0.95rem', height: '0.95rem' }} /> : <Radar style={{ width: '0.95rem', height: '0.95rem' }} />}
                   </div>
                   <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#334155' }}>{notif.text}</span>
@@ -621,12 +665,12 @@ export function HowItWorks() {
             transition={{ delay: 0.2 }}
             className="md:col-span-2 lg:col-span-2"
             style={{
-              background: 'linear-gradient(135deg, #9f1239 0%, #4c0519 100%)',
+              background: toolkitThemes.fidelity.background,
               color: 'white',
               borderRadius: 'clamp(1.25rem, 4vw, 1.5rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
-              boxShadow: '0 24px 52px rgba(159,18,57,0.22)',
-              border: '1px solid rgba(251,113,133,0.34)',
+              boxShadow: '0 24px 52px rgba(236,72,153,0.20)',
+              border: `1px solid ${toolkitThemes.fidelity.border}`,
               position: 'relative',
               overflow: 'hidden',
             }}
@@ -635,16 +679,16 @@ export function HowItWorks() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)' }}>
-                    <MessageSquare style={{ width: '1.25rem', height: '1.25rem', color: '#fecdd3' }} />
+                    <MessageSquare style={{ width: '1.25rem', height: '1.25rem', color: toolkitThemes.fidelity.soft }} />
                   </div>
-                  <span style={{ fontSize: '0.76rem', fontWeight: 900, color: '#fecdd3', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Fidelity Test</span>
+                  <span style={{ fontSize: '0.76rem', fontWeight: 900, color: toolkitThemes.fidelity.soft, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Fidelity Test</span>
                 </div>
                 <h4 style={{ fontSize: '1.35rem', fontWeight: 900, letterSpacing: '-0.03em', marginBottom: '0.45rem' }}>Verify hidden activity</h4>
                 <p style={{ color: 'rgba(255,255,255,0.74)', fontSize: '0.88rem', lineHeight: 1.55 }}>Evaluate behavior against classic boundary-crossing patterns.</p>
               </div>
               <div style={{ borderRadius: '1.1rem', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.12)', padding: '0.85rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                  <span style={{ color: '#fecdd3', fontSize: '0.72rem', fontWeight: 900, textTransform: 'uppercase' }}>Trust score</span>
+                  <span style={{ color: toolkitThemes.fidelity.soft, fontSize: '0.72rem', fontWeight: 900, textTransform: 'uppercase' }}>Trust score</span>
                   <span style={{ color: '#fde68a', fontWeight: 900 }}>76%</span>
                 </div>
                 {['Consistent online behavior', 'Strong communication signals', 'Location mismatch detected'].map((item, i) => (
@@ -665,12 +709,12 @@ export function HowItWorks() {
             transition={{ delay: 0.3 }}
             className="md:col-span-2 lg:col-span-2"
             style={{
-              background: 'linear-gradient(135deg, #fb923c 0%, #be123c 52%, #581c87 100%)',
+              background: toolkitThemes.following.background,
               color: 'white',
               borderRadius: 'clamp(1.25rem, 4vw, 1.5rem)',
               padding: 'clamp(1rem, 3vw, 1.25rem)',
-              boxShadow: '0 24px 52px rgba(190,18,60,0.18)',
-              border: '1px solid rgba(255,255,255,0.18)',
+              boxShadow: '0 24px 52px rgba(139,92,246,0.20)',
+              border: `1px solid ${toolkitThemes.following.border}`,
               position: 'relative',
               overflow: 'hidden',
             }}
@@ -679,14 +723,14 @@ export function HowItWorks() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                   <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.13)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                    <Users style={{ width: '1.25rem', height: '1.25rem', color: '#fde68a' }} />
+                    <Users style={{ width: '1.25rem', height: '1.25rem', color: toolkitThemes.following.soft }} />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <h4 style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.03em' }}>Following AI</h4>
                       <span style={{ backgroundColor: 'rgba(255,255,255,0.14)', padding: '0.2rem 0.55rem', borderRadius: '9999px', fontSize: '0.62rem', fontWeight: 900, color: '#ffffff', border: '1px solid rgba(255,255,255,0.16)' }}>Cheater AI</span>
                     </div>
-                    <p style={{ color: '#fde68a', fontSize: '0.74rem', fontWeight: 800 }}>Analyse who they follow and like</p>
+                    <p style={{ color: toolkitThemes.following.soft, fontSize: '0.74rem', fontWeight: 800 }}>Analyse who they follow and like</p>
                   </div>
                 </div>
                 <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.88rem', lineHeight: 1.55 }}>Reviews public follows and likes to reveal patterns before conversations shift to dating apps.</p>
@@ -703,7 +747,7 @@ export function HowItWorks() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       {followingPreviewPhotos.map((img, index) => (
-                        <img key={img} src={img} alt={title} style={{ width: '2.25rem', height: '2.25rem', borderRadius: '999px', objectFit: 'cover', border: `2px solid ${i ? '#fb7185' : '#22c55e'}`, marginLeft: index ? '-0.65rem' : 0 }} />
+                        <img key={img} src={img} alt={title} style={{ width: '2.25rem', height: '2.25rem', borderRadius: '999px', objectFit: 'cover', border: `2px solid ${i ? toolkitThemes.fidelity.accent : '#22c55e'}`, marginLeft: index ? '-0.65rem' : 0 }} />
                       ))}
                       <span style={{ marginLeft: '0.15rem', width: '2.35rem', height: '2.35rem', borderRadius: '999px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)', fontSize: '0.8rem', fontWeight: 900 }}>{count}</span>
                     </div>
@@ -731,14 +775,14 @@ export function HowItWorks() {
           >
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: '0.75rem' }} className="max-md:!grid-cols-1">
               {[
-                { icon: Lock, title: '100% Private', text: 'Your searches stay private' },
-                { icon: ShieldCheck, title: 'AI-powered precision', text: 'Relationship risk assessment' },
-                { icon: ArrowRight, title: 'Recurring All Access', text: 'All services in one toolkit' },
+                { icon: Lock, title: '100% Private', text: 'Your searches stay private', accent: toolkitThemes.dating.accent, bg: 'rgba(255,78,113,0.1)', border: 'rgba(255,78,113,0.16)' },
+                { icon: ShieldCheck, title: 'AI-powered precision', text: 'Relationship risk assessment', accent: toolkitThemes.faceTrace.accent, bg: 'rgba(96,165,250,0.1)', border: 'rgba(96,165,250,0.16)' },
+                { icon: ArrowRight, title: 'Recurring All Access', text: 'All services in one toolkit', accent: toolkitThemes.following.accent, bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.16)' },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
                   <div key={item.title} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
-                    <div style={{ width: '2.35rem', height: '2.35rem', flexShrink: 0, borderRadius: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff1f2', color: colors.rose500, border: '1px solid #ffe4e6' }}>
+                    <div style={{ width: '2.35rem', height: '2.35rem', flexShrink: 0, borderRadius: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: item.bg, color: item.accent, border: `1px solid ${item.border}` }}>
                       <Icon style={{ width: '1.1rem', height: '1.1rem' }} />
                     </div>
                     <div style={{ minWidth: 0 }}>

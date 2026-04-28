@@ -2,28 +2,46 @@
 import React, { useEffect, useState } from 'react';
 import { Lock, X, MapPin, Clock, ShieldCheck } from 'lucide-react';
 import { datingSamplePhotos, normalizeDatingGender, type DatingGender } from '../../lib/profileSamples';
+import { useService } from '../../lib/ServiceContext';
 
 /**
  * DatingResultsPreview - Blurred dating profiles for payment teaser
  * Shows Tinder/Bumble style profile cards with real blurred photos
  */
 export function DatingResultsPreview() {
+    const { searchTarget } = useService();
     const [gender, setGender] = useState<DatingGender>('woman'); // default
     const [showExample, setShowExample] = useState(false);
+    const [searchDetails, setSearchDetails] = useState<{ name: string; age: string; location: string }>({
+        name: '',
+        age: '',
+        location: '',
+    });
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const savedGender = sessionStorage.getItem('pf_dating_gender');
             setGender(normalizeDatingGender(savedGender));
+            const savedSearch = sessionStorage.getItem('pf_dating_search');
+            if (savedSearch) {
+                try {
+                    setSearchDetails(JSON.parse(savedSearch));
+                } catch {
+                    setSearchDetails({ name: '', age: '', location: '' });
+                }
+            }
         }
     }, []);
 
     const selectedPhotos = datingSamplePhotos[gender];
-    const nameStr = gender === 'man' ? 'Alex' : 'Emma';
+    const searchedName = searchDetails.name || searchTarget;
+    const nameStr = searchedName || (gender === 'man' ? 'Alex' : 'Emma');
+    const searchedAge = searchDetails.age ? `${searchDetails.age} years old` : null;
+    const searchedLocation = searchDetails.location || 'Paris, France';
 
     const profiles = [
-        { age: 24, distance: '4 km', match: 88, img: selectedPhotos[0], example: true },
-        { age: 27, distance: '2 km', match: 91, img: selectedPhotos[1] },
+        { age: 24, distance: '4 km', match: 88, img: selectedPhotos[1], example: true },
+        { age: 27, distance: '2 km', match: 91, img: selectedPhotos[0] },
         { age: 23, distance: '5 km', match: 86, img: selectedPhotos[2] },
         { age: 26, distance: '3 km', match: 90, img: selectedPhotos[3] },
         { age: 25, distance: '1 km', match: 84, img: selectedPhotos[4] },
@@ -46,13 +64,13 @@ export function DatingResultsPreview() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '14px', marginBottom: '14px' }}>
                     <div style={{ minWidth: 0 }}>
                         <div style={{ color: '#ff4e71', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
-                            Sample report preview
+                            Search report ready
                         </div>
                         <h2 style={{ color: '#111827', fontSize: '1.45rem', fontWeight: 900, lineHeight: 1.05, margin: 0 }}>
-                            Potential matches found
+                            Potential matches for {nameStr}
                         </h2>
                         <p style={{ color: '#6b7280', fontSize: '0.82rem', lineHeight: 1.4, margin: '8px 0 0', maxWidth: '260px' }}>
-                            Unlock to reveal full photos, profile details and activity signals.
+                            {searchedAge ? `${searchedAge} • ` : ''}{searchedLocation} • unlock profile details and activity signals.
                         </p>
                     </div>
                     <div style={{
@@ -65,13 +83,13 @@ export function DatingResultsPreview() {
                         textAlign: 'center',
                         boxShadow: '0 10px 24px rgba(255, 78, 113, 0.24)'
                     }}>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 900, lineHeight: 1 }}>80%</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 900, lineHeight: 1 }}>80%+</div>
                         <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.9, textTransform: 'uppercase', letterSpacing: '0.04em' }}>match</div>
                     </div>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {['20+ matches', 'Paris scan', 'Recently active'].map((label, index) => (
+                    {['20+ matches', `${searchedLocation.split(',')[0]} scan`, 'Recently active'].map((label, index) => (
                         <span key={label} style={{
                             background: index === 0 ? '#fff0f5' : '#ffffff',
                             color: index === 0 ? '#ff4e71' : '#374151',
@@ -99,7 +117,7 @@ export function DatingResultsPreview() {
             }}>
                 <div style={{ fontSize: '1.125rem', fontWeight: 600, color: '#1f2937', marginBottom: '1rem' }}>
                     Potential Matches : {nameStr}<br />
-                    <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#4b5563' }}>Paris, France</span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#4b5563' }}>{searchedLocation}</span>
                 </div>
 
                 {/* Horizontal Carousel */}
@@ -131,7 +149,7 @@ export function DatingResultsPreview() {
                                 position: 'absolute', inset: -10,
                                 backgroundImage: `url(${p.img})`,
                                 backgroundSize: 'cover',
-                                backgroundPosition: 'center',
+                                backgroundPosition: 'center 20%',
                                 filter: p.example ? 'none' : 'blur(8px)',
                                 zIndex: 1
                             }} />
@@ -184,7 +202,7 @@ export function DatingResultsPreview() {
                         }}
                     >
                         <div style={{ position: 'relative', height: '260px' }}>
-                            <img src={profiles[0].img} alt="Example result" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={profiles[0].img} alt="Example result" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 18%' }} />
                             <button
                                 type="button"
                                 onClick={() => setShowExample(false)}

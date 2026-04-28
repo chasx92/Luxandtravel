@@ -95,8 +95,9 @@ const footerLinks = {
     { label: footerContent.links.about || "About us", href: "#about" }
   ],
   legal: [
-    { label: footerContent.links.terms || "Terms", href: "#terms" },
-    { label: footerContent.links.privacy || "Privacy", href: "#privacy" }
+    { label: footerContent.links.terms || "Terms", href: "/terms" },
+    { label: footerContent.links.privacy || "Privacy", href: "/privacy" },
+    { label: "Legal Notice", href: "/legal-notice" }
   ]
 };
 

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Check, Crown, Sparkles, Lock, ArrowRight,
+    Check, Sparkles, Lock, ArrowRight,
     Shield, Zap, Star, Clock, X, Infinity as InfinityIcon,
     Search, Eye, Scan, MessageSquare, Heart
 } from 'lucide-react';
@@ -26,6 +26,14 @@ export function PricingSelector({ serviceId, onPlanSelect, selectedPlan, isProce
     const isSubscriptionSelected = selectedPlan === 'subscription';
     const isSingleSelected = selectedPlan === 'single';
     const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
+    const paymentPaths: Record<string, string> = {
+        dating: '/dating-search/payment',
+        faceTrace: '/face-trace/payment',
+        fidelity: '/fidelity-test/payment',
+        following: '/following-ai/payment',
+        chatAnalysis: '/payment/chat-analysis',
+    };
+    const targetPaymentPath = paymentPaths[serviceId] || '/payment';
 
     // Service icons for the features list
     const serviceIcons = [
@@ -98,26 +106,24 @@ export function PricingSelector({ serviceId, onPlanSelect, selectedPlan, isProce
                     padding: '1.1rem',
                     border: '2px solid transparent',
                 }}>
-                    {/* FLOATING BADGE - "MEILLEURE OFFRE" */}
+                    {/* Floating badge */}
                     <div style={{
                         position: 'absolute',
                         top: '-12px',
                         right: '16px',
-                        background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+                        background: serviceConfig.accentColors.gradient,
                         color: 'white',
                         fontSize: '0.6875rem',
                         fontWeight: 800,
-                        padding: '6px 14px',
-                        borderRadius: '9999px',
-                        boxShadow: '0 4px 15px rgba(245,158,11,0.4)',
+                        padding: '6px 16px',
+                        borderRadius: '0.7rem',
+                        boxShadow: `0 8px 20px ${serviceConfig.accentColors.primary}3f`,
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '4px',
                         textTransform: 'uppercase',
                         letterSpacing: '0.05em',
                     }}>
-                        <Crown style={{ width: '12px', height: '12px' }} />
-                        Best Offer
+                        Most Popular
                     </div>
 
                     {/* Selection Radio */}
@@ -303,7 +309,7 @@ export function PricingSelector({ serviceId, onPlanSelect, selectedPlan, isProce
                                     desktopBtn.click();
                                 }
                             } else {
-                                onPlanSelect('subscription');
+                                window.location.href = `${targetPaymentPath}?plan=subscription`;
                             }
                         }}
                         style={{
@@ -521,28 +527,13 @@ export function PricingSelector({ serviceId, onPlanSelect, selectedPlan, isProce
                         </div>
                     </div>
 
-                    {/* Limited timer */}
+                    {/* Compact action */}
                     <div style={{
-                        marginTop: '0.625rem',
+                        marginTop: '0.75rem',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between',
+                        justifyContent: 'flex-end',
                     }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.375rem',
-                            padding: '0.375rem 0.625rem',
-                            background: '#fef3c7',
-                            borderRadius: '0.375rem',
-                            border: '1px solid #fcd34d',
-                        }}>
-                            <Clock style={{ width: '0.75rem', height: '0.75rem', color: '#d97706' }} />
-                            <span style={{ fontSize: '0.625rem', fontWeight: 600, color: '#92400e' }}>
-                                Limited offer
-                            </span>
-                        </div>
-
                         <button
                             type="button"
                             onClick={(e) => {
@@ -560,6 +551,8 @@ export function PricingSelector({ serviceId, onPlanSelect, selectedPlan, isProce
                                     } else if (desktopBtn) {
                                         desktopBtn.click();
                                     }
+                                } else {
+                                    window.location.href = `${targetPaymentPath}?plan=single`;
                                 }
                             }}
                             disabled={isProcessing}

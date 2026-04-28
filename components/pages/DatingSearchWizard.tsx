@@ -211,6 +211,14 @@ export default function DatingSearchWizard() {
         e.preventDefault();
         setIsSubmitting(true);
 
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem('pf_dating_search', JSON.stringify({
+                name: targetName.trim(),
+                age: targetAge,
+                location: locationInput.trim(),
+            }));
+        }
+
         setTimeout(() => {
             router.push('/dating-search/payment');
         }, 1000);
