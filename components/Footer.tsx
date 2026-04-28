@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { Star, ArrowRight, Shield } from "lucide-react";
+import { ArrowRight, Shield } from "lucide-react";
 import { footerContent } from "../lib/content";
 
 const LOGO_URL = "https://pub-a708aef7cab14c7e8c61d131d5e3682d.r2.dev/Design%20sans%20titre%20(7).svg";
@@ -20,8 +19,8 @@ interface FooterTheme {
 
 const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
   default: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fce4ec',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #ff4b5c 0%, #ff9e75 100%)',
     accentColor: '#ff4b5c',
     textColor: '#374151',
@@ -30,8 +29,8 @@ const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
     badgeLabel: 'Dating Search'
   },
   dating: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fce4ec',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #ff4b5c 0%, #ff9e75 100%)',
     accentColor: '#ff4b5c',
     textColor: '#374151',
@@ -40,8 +39,8 @@ const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
     badgeLabel: 'Dating Search'
   },
   faceTrace: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fff0f0',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFA502 100%)',
     accentColor: '#FF6B6B',
     textColor: '#374151',
@@ -50,8 +49,8 @@ const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
     badgeLabel: 'Face Trace'
   },
   activity: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fce4f0',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)',
     accentColor: '#ec4899',
     textColor: '#374151',
@@ -60,8 +59,8 @@ const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
     badgeLabel: 'Activity Tracker'
   },
   fidelity: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fff4ed',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #f97316 0%, #fb923c 100%)',
     accentColor: '#f97316',
     textColor: '#374151',
@@ -70,8 +69,8 @@ const FOOTER_THEMES: Record<FooterVariant, FooterTheme> = {
     badgeLabel: 'Fidelity Test'
   },
   chat: {
-    mainBg: '#f8f9fa',
-    bottomBarBg: '#fff0f0',
+    mainBg: '#fbfcfe',
+    bottomBarBg: '#ffffff',
     bottomBarGradient: 'linear-gradient(135deg, #FF6B6B 0%, #FFA502 100%)',
     accentColor: '#FF6B6B',
     textColor: '#374151',
@@ -107,13 +106,14 @@ interface FooterProps {
 
 export function Footer({ variant = 'default' }: FooterProps) {
   const theme = FOOTER_THEMES[variant];
+  const trustItems = ["Privacy-first searches", "Secure checkout", "Legal pages available"];
 
   return (
     <footer className="font-['Inter_Tight',sans-serif]">
       {/* Main Footer Section - Light Background */}
       <div
-        className="py-10 md:py-12"
-        style={{ backgroundColor: theme.mainBg }}
+        className="py-10 md:py-12 border-t"
+        style={{ backgroundColor: theme.mainBg, borderColor: '#e5e7eb' }}
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
@@ -121,18 +121,9 @@ export function Footer({ variant = 'default' }: FooterProps) {
             {/* Brand Column */}
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                {/* Animated Logo */}
-                <motion.div
-                  className="bg-white rounded-2xl p-3 shadow-md"
-                  animate={{
-                    y: [0, -6, 0],
-                    rotate: [0, -3, 3, 0]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+                <div
+                  className="bg-white rounded-xl p-2.5 border shadow-sm"
+                  style={{ borderColor: '#e5e7eb' }}
                 >
                   <img
                     src={LOGO_URL}
@@ -142,7 +133,7 @@ export function Footer({ variant = 'default' }: FooterProps) {
                     width={32}
                     height={32}
                   />
-                </motion.div>
+                </div>
                 <span
                   className="text-xl font-black tracking-tight"
                   style={{ color: theme.textColor }}
@@ -158,44 +149,43 @@ export function Footer({ variant = 'default' }: FooterProps) {
                 {footerContent.tagline}
               </p>
 
-              {/* Star Rating */}
-              <div className="flex gap-1 mb-4" aria-label="Rating: 5 out of 5 stars">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4"
-                    style={{ fill: theme.accentColor, color: theme.accentColor }}
-                  />
+              <div className="flex flex-wrap gap-2 mb-4">
+                {trustItems.map((item) => (
+                  <span
+                    key={item}
+                    className="inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold"
+                    style={{ borderColor: '#e5e7eb', color: theme.mutedColor }}
+                  >
+                    <Shield className="h-3.5 w-3.5" style={{ color: theme.accentColor }} />
+                    {item}
+                  </span>
                 ))}
               </div>
 
               {/* Service Badge */}
-              <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2"
+              <div
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full border bg-white"
                 style={{
-                  borderColor: theme.accentColor,
-                  backgroundColor: 'white'
+                  borderColor: `${theme.accentColor}33`
                 }}
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
               >
                 <span
                   className="w-2 h-2 rounded-full animate-pulse"
                   style={{ backgroundColor: theme.accentColor }}
                 />
                 <span
-                  className="text-sm font-semibold"
+                  className="text-xs font-bold"
                   style={{ color: theme.accentColor }}
                 >
                   {theme.badgeLabel}
                 </span>
-              </motion.div>
+              </div>
             </div>
 
             {/* Tools Links */}
             <div>
               <h3
-                className="text-sm font-bold mb-4 italic"
+                className="text-xs font-black mb-4 uppercase tracking-[0.14em]"
                 style={{ color: theme.textColor }}
               >
                 Tools
@@ -224,7 +214,7 @@ export function Footer({ variant = 'default' }: FooterProps) {
             {/* Resources Links */}
             <div>
               <h3
-                className="text-sm font-bold mb-4 italic"
+                className="text-xs font-black mb-4 uppercase tracking-[0.14em]"
                 style={{ color: theme.textColor }}
               >
                 Resources
@@ -253,7 +243,7 @@ export function Footer({ variant = 'default' }: FooterProps) {
             {/* Legal Links */}
             <div>
               <h3
-                className="text-sm font-bold mb-4 italic"
+                className="text-xs font-black mb-4 uppercase tracking-[0.14em]"
                 style={{ color: theme.textColor }}
               >
                 {footerContent.legal}
@@ -284,15 +274,15 @@ export function Footer({ variant = 'default' }: FooterProps) {
 
       {/* Bottom Copyright Bar - Gradient Background */}
       <div
-        className="py-4"
-        style={{ backgroundColor: theme.bottomBarBg }}
+        className="py-4 border-t"
+        style={{ backgroundColor: theme.bottomBarBg, borderColor: '#e5e7eb' }}
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Copyright */}
             <p
-              className="text-sm font-medium"
-              style={{ color: theme.accentColor }}
+              className="text-sm font-semibold"
+              style={{ color: theme.mutedColor }}
             >
               {footerContent.copyright}
             </p>
@@ -321,7 +311,8 @@ export function Footer({ variant = 'default' }: FooterProps) {
             <div
               className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
               style={{
-                backgroundColor: 'rgba(0,0,0,0.08)',
+                backgroundColor: '#f9fafb',
+                border: '1px solid #e5e7eb',
                 color: theme.mutedColor
               }}
             >

@@ -40,72 +40,69 @@ const IconArrowRight = ({ style }: { style?: React.CSSProperties }) => (
 
 const PaymentBadges = () => {
     const badges = [
-        {
-            label: 'Visa',
-            src: 'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png',
-            height: 16,
-        },
-        {
-            label: 'Mastercard',
-            src: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
-            height: 24,
-        },
-        {
-            label: 'Discover',
-            src: 'https://upload.wikimedia.org/wikipedia/commons/5/57/Discover_Card_logo.svg',
-            height: 18,
-        },
-        {
-            label: 'American Express',
-            src: 'https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg',
-            height: 18,
-        },
+        { label: 'VISA', color: '#1434cb', style: 'italic' },
+        { label: 'MC', color: '#111827', style: 'normal' },
+        { label: 'DISCOVER', color: '#111827', style: 'normal' },
+        { label: 'AMEX', color: '#1273c4', style: 'normal' },
     ];
 
     return (
         <div style={{
-            marginTop: '1rem',
-            paddingTop: '1rem',
-            borderTop: '1px solid rgba(148,163,184,0.18)',
+            marginTop: '0.8rem',
+            paddingTop: '0.8rem',
+            borderTop: '1px solid rgba(148,163,184,0.12)',
         }}>
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.6rem',
-                color: '#6b7280',
-                fontSize: '0.92rem',
+                gap: '0.45rem',
+                color: '#7b8190',
+                fontSize: '0.76rem',
                 fontWeight: 700,
                 textAlign: 'center',
-                marginBottom: '0.75rem',
+                marginBottom: '0.55rem',
+                letterSpacing: '0.01em',
             }}>
-                <IconLock style={{ width: '1.1rem', height: '1.1rem', color: '#a1a1aa', flexShrink: 0 }} />
-                <span>Paiement securise via Stripe</span>
+                <IconLock style={{ width: '0.85rem', height: '0.85rem', color: '#9ca3af', flexShrink: 0 }} />
+                <span>Secure payment by Stripe</span>
             </div>
             <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 justifyContent: 'center',
-                gap: '0.7rem',
+                gap: '0.42rem',
             }}>
                 {badges.map((badge) => (
                     <div
                         key={badge.label}
                         aria-label={`${badge.label} accepted`}
                         style={{
-                            minWidth: '86px',
-                            height: '44px',
-                            padding: '0 0.7rem',
-                            borderRadius: '0.55rem',
-                            background: '#ffffff',
-                            border: '1px solid rgba(15,23,42,0.16)',
+                            minWidth: '54px',
+                            height: '28px',
+                            padding: '0 0.5rem',
+                            borderRadius: '0.45rem',
+                            background: 'rgba(255,255,255,0.78)',
+                            border: '1px solid rgba(15,23,42,0.10)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            boxShadow: '0 5px 14px rgba(15,23,42,0.06)',
+                            color: badge.color,
+                            fontSize: badge.label === 'DISCOVER' ? '0.58rem' : '0.72rem',
+                            fontWeight: 900,
+                            fontStyle: badge.style,
+                            boxShadow: '0 4px 10px rgba(15,23,42,0.035)',
+                            letterSpacing: badge.label === 'AMEX' ? '0.01em' : '0',
                         }}
                     >
-                        <img src={badge.src} alt={badge.label} style={{ height: `${badge.height}px`, width: 'auto', maxWidth: '74px', objectFit: 'contain' }} />
+                        {badge.label === 'MC' ? (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                                <span style={{ width: '12px', height: '12px', borderRadius: '999px', background: '#eb001b', display: 'inline-block' }} />
+                                <span style={{ width: '12px', height: '12px', borderRadius: '999px', background: '#f79e1b', display: 'inline-block', marginLeft: '-5px' }} />
+                            </span>
+                        ) : (
+                            badge.label
+                        )}
                     </div>
                 ))}
             </div>
@@ -131,28 +128,28 @@ const OrderSummary = ({
 
     return (
         <div style={{
-            marginTop: '1rem',
-            background: '#ffffff',
+            marginTop: '0.85rem',
+            background: 'rgba(255,255,255,0.86)',
             color: '#0f172a',
-            borderRadius: '1rem',
-            padding: '1rem 1rem 1.05rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 10px 30px rgba(15,23,42,0.08)',
+            borderRadius: '0.85rem',
+            padding: '0.85rem 0.9rem',
+            border: '1px solid rgba(226,232,240,0.9)',
+            boxShadow: '0 8px 22px rgba(15,23,42,0.045)',
         }}>
             <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 gap: '1rem',
-                marginBottom: '0.9rem',
+                marginBottom: '0.72rem',
             }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Order summary</h3>
+                <h3 style={{ fontSize: '0.88rem', fontWeight: 800, margin: 0, color: '#111827' }}>Order summary</h3>
                 <span style={{
-                    padding: '0.28rem 0.55rem',
+                    padding: '0.18rem 0.45rem',
                     borderRadius: '999px',
-                    background: '#ecfdf5',
-                    color: '#047857',
-                    fontSize: '0.72rem',
+                    background: 'rgba(236,253,245,0.82)',
+                    color: '#058051',
+                    fontSize: '0.62rem',
                     fontWeight: 800,
                     whiteSpace: 'nowrap',
                 }}>
@@ -160,26 +157,26 @@ const OrderSummary = ({
                 </span>
             </div>
 
-            <div style={{ display: 'grid', gap: '0.65rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#334155' }}>
+            <div style={{ display: 'grid', gap: '0.48rem', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#5f6673' }}>
                     <span>{planLabel}</span>
-                    <span style={{ fontWeight: 700 }}>{formatPrice(originalPrice)}</span>
+                    <span style={{ fontWeight: 700, color: '#374151' }}>{formatPrice(originalPrice)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', color: '#047857' }}>
-                    <span>Limited-time discount</span>
+                    <span>Discount applied</span>
                     <span style={{ fontWeight: 800 }}>-{formatPrice(discount)}</span>
                 </div>
             </div>
 
             <div style={{
                 height: '1px',
-                background: '#e2e8f0',
-                margin: '1rem 0',
+                background: 'rgba(226,232,240,0.82)',
+                margin: '0.72rem 0',
             }} />
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '1rem' }}>
-                <span style={{ fontSize: '1rem', fontWeight: 800 }}>Total today</span>
-                <span style={{ fontSize: '1.45rem', fontWeight: 900 }}>{formatPrice(total)}</span>
+                <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#111827' }}>Total today</span>
+                <span style={{ fontSize: '1.22rem', fontWeight: 900, letterSpacing: '-0.02em' }}>{formatPrice(total)}</span>
             </div>
         </div>
     );

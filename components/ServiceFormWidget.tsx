@@ -14,9 +14,9 @@ export type ServiceType = 'dating' | 'following' | 'facetrace' | 'fidelity';
 
 const SERVICES = [
     { id: 'dating' as ServiceType, label: 'Dating', icon: Heart, title: 'WHO ARE YOU LOOKING FOR?' },
-    { id: 'following' as ServiceType, label: 'Social AI', icon: Users, title: 'ANALYZE SOCIAL PROFILE' },
-    { id: 'facetrace' as ServiceType, label: 'Face', icon: ScanFace, title: 'BIOMETRIC FACE SCAN' },
-    { id: 'fidelity' as ServiceType, label: 'Fidelity', icon: ShieldAlert, title: 'PARTNER FIDELITY CHECK' },
+    { id: 'following' as ServiceType, label: 'Social AI', icon: Users, title: 'ENTER TARGET USERNAME' },
+    { id: 'facetrace' as ServiceType, label: 'Face', icon: ScanFace, title: 'UPLOAD PHOTO TO SCAN' },
+    { id: 'fidelity' as ServiceType, label: 'Fidelity', icon: ShieldAlert, title: 'UPLOAD CHAT SCREENSHOT' },
 ];
 
 // ============================================
@@ -410,16 +410,29 @@ export const ServiceFormWidget = () => {
                 transition={{ duration: 0.2 }}
             >
                 {/* Title */}
-                <h3 style={{
-                    color: primaryColor,
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    textAlign: 'center',
-                    marginBottom: '10px',
-                    letterSpacing: '0.5px',
-                }}>
-                    {activeConfig.title}
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                    <div style={{
+                        background: `linear-gradient(180deg, ${primaryColor}10 0%, #ffffff 100%)`,
+                        borderRadius: '12px',
+                        border: `1.5px solid ${primaryColor}30`,
+                        boxShadow: `0 8px 20px ${primaryColor}1f, inset 0 1px 0 rgba(255,255,255,0.9)`,
+                        padding: '8px 16px',
+                        maxWidth: '100%'
+                    }}>
+                        <h3 style={{
+                            color: primaryColor,
+                            fontSize: '11px',
+                            fontWeight: 950,
+                            textAlign: 'center',
+                            margin: 0,
+                            letterSpacing: '0.12em',
+                            lineHeight: 1.15,
+                            whiteSpace: 'nowrap',
+                        }}>
+                            {activeConfig.title}
+                        </h3>
+                    </div>
+                </div>
 
                 {/* Content */}
                 {/* Content */}

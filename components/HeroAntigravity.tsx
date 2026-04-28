@@ -536,30 +536,31 @@ const HeroAntigravity: React.FC = () => {
                         style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '9px',
+                            gap: '8px',
                             background: 'transparent',
                             border: 'none',
                             borderRadius: 0,
                             padding: '2px 0',
                             boxShadow: 'none',
+                            backdropFilter: 'none',
                             color: '#ffffff',
                             marginBottom: '14px',
                             maxWidth: '100%'
                         }}
                     >
                         <span aria-hidden="true" style={{
-                            fontSize: '14px',
+                            fontSize: '13px',
                             lineHeight: 1,
+                            opacity: 0.9,
                             flexShrink: 0
                         }}>✦</span>
                         <span style={{
                             fontSize: 'clamp(13px, 2.6vw, 15px)',
-                            fontFamily: "Georgia, 'Times New Roman', serif",
-                            fontStyle: 'italic',
-                            fontWeight: 700,
+                            fontFamily: "var(--font-display), 'Plus Jakarta Sans', system-ui, sans-serif",
+                            fontWeight: 800,
                             lineHeight: 1.1,
                             whiteSpace: 'nowrap',
-                            letterSpacing: '0.01em',
+                            letterSpacing: '0',
                             textShadow: '0 1px 0 rgba(255,255,255,0.08)'
                         }}>
                             {heroTrustMap[selectedService]}
@@ -567,17 +568,18 @@ const HeroAntigravity: React.FC = () => {
                         <span aria-hidden="true" style={{
                             width: '1px',
                             height: '14px',
-                            background: 'rgba(255,255,255,0.32)',
+                            background: 'rgba(255,255,255,0.28)',
                             flexShrink: 0
                         }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1px', flexShrink: 0, opacity: 0.95 }}>
                             {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} size={13} fill="#ffffff" color="#ffffff" />
+                                <Star key={star} size={12} fill="#ffffff" color="#ffffff" strokeWidth={1.8} />
                             ))}
                         </div>
                         <span aria-hidden="true" style={{
-                            fontSize: '14px',
+                            fontSize: '13px',
                             lineHeight: 1,
+                            opacity: 0.9,
                             flexShrink: 0
                         }}>✦</span>
                     </div>
@@ -675,17 +677,22 @@ const HeroAntigravity: React.FC = () => {
                         {/* Instruction Header */}
                         <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                             <div style={{
-                                backgroundColor: '#f1f5f9',
-                                borderRadius: '8px',
-                                padding: '8px 24px',
-                                border: '1px solid #e2e8f0'
+                                background: `linear-gradient(180deg, ${currentAccent.light} 0%, #ffffff 100%)`,
+                                borderRadius: '14px',
+                                padding: '10px 24px',
+                                border: `1.5px solid ${currentAccent.primary}30`,
+                                boxShadow: `0 10px 24px ${currentAccent.primary}1f, inset 0 1px 0 rgba(255,255,255,0.9)`,
+                                maxWidth: '100%'
                             }}>
                                 <span style={{
-                                    fontSize: '12px',
-                                    fontWeight: 900,
-                                    letterSpacing: '0.15em',
-                                    color: '#ff4b5c',
-                                    textTransform: 'uppercase'
+                                    display: 'block',
+                                    fontSize: '13px',
+                                    fontWeight: 950,
+                                    letterSpacing: '0.14em',
+                                    color: currentAccent.primary,
+                                    textTransform: 'uppercase',
+                                    whiteSpace: 'nowrap',
+                                    lineHeight: 1.15
                                 }}>
                                     {currentContent.instruction}
                                 </span>
