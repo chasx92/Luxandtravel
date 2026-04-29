@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateFidelityReport } from "@/lib/fidelityReport";
+import { cleanGeminiError } from "@/lib/gemini";
 import type { FidelityAutomationPayload } from "@/lib/fidelityAutomation";
 
 type FullReportRequestBody = {
@@ -49,6 +50,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing or invalid Fidelity payload" }, { status: 400 });
   }
 
-  const report = await generateFidelityReport(body.payload);
-  return NextResponse.json(report);
+  try {
+    const report = await generateFidelityReport(body.payload);
+    return NextResponse.json(report);
+  } catch (error) {
+    const cleanError = cleanGeminiError(error);
+    console.error("Fidelity Gemini full-report failed", cleanError);
+    return NextResponse.json(cleanError, { status: cleanError.status });
+  }
 }

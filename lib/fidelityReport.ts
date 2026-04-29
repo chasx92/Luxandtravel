@@ -1,6 +1,6 @@
 import "server-only";
 
-import { generateGeminiContent, type GeminiPart } from "@/lib/gemini";
+import { GeminiApiError, generateGeminiContent, type GeminiPart } from "@/lib/gemini";
 import type { FidelityAutomationPayload, FidelityConversationType } from "@/lib/fidelityAutomation";
 
 export type FidelityReportSignal = {
@@ -76,7 +76,7 @@ function buildImageParts(screenshots: string[]): GeminiPart[] {
     .slice(0, 6)
     .map((image) => ({
       inline_data: {
-        mimeType: image.mimeType,
+        mime_type: image.mimeType,
         data: image.data,
       },
     }));
@@ -235,7 +235,14 @@ export async function generateFidelityReport(
       maxOutputTokens: 1600,
     });
     return normalizeReport(JSON.parse(extractJson(responseText)));
-  } catch {
-    return FALLBACK_REPORT;
+  } catch (error) {
+    if (error instanceof GeminiApiError) {
+      throw error;
+    }
+
+    throw new GeminiApiError(
+      error instanceof Error ? error.message : "Gemini report JSON could not be parsed",
+      502
+    );
   }
 }

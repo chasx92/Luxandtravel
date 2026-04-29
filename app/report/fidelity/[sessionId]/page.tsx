@@ -119,7 +119,12 @@ export default function FidelityReportPage() {
         });
 
         if (!response.ok) {
-          throw new Error(`Report generation failed with ${response.status}`);
+          const errorBody = await response.json().catch(() => null);
+          throw new Error(
+            typeof errorBody?.message === "string"
+              ? errorBody.message
+              : `Report generation failed with ${response.status}`
+          );
         }
 
         const report = (await response.json()) as FidelityReportViewData;
@@ -140,7 +145,7 @@ export default function FidelityReportPage() {
         if (!cancelled) {
           setState({ status: "ready", report, payload: reportPayload, isDemo: false, screenshots: reportPayload.screenshots });
         }
-      } catch {
+      } catch (error) {
         if (!cancelled) {
           setState({
             status: "error",
@@ -149,7 +154,9 @@ export default function FidelityReportPage() {
             isDemo: true,
             screenshots: storedScreenshots,
             message:
-              "The report page stayed available, but the backend report request could not complete. The funnel is not blocked.",
+              error instanceof Error
+                ? error.message
+                : "The backend report request could not complete.",
           });
         }
       }

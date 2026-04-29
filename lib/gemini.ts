@@ -2,7 +2,7 @@ import "server-only";
 
 type GeminiInlineDataPart = {
   inline_data: {
-    mimeType: string;
+    mime_type: string;
     data: string;
   };
 };
@@ -91,9 +91,12 @@ export async function generateGeminiContentResult({
     generationConfig.thinkingConfig = { thinkingBudget };
   }
 
-  const response = await fetch(`${getGeminiUrl(model)}?key=${apiKey}`, {
+  const response = await fetch(getGeminiUrl(model), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
     body: JSON.stringify({
       contents: [{ role: "user", parts }],
       generationConfig,

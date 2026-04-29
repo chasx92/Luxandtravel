@@ -117,7 +117,7 @@ export async function POST(request: Request) {
     { text: buildPrompt(context) },
     {
       inline_data: {
-        mimeType: body.mimeType,
+        mime_type: body.mimeType,
         data: stripDataUrlPrefix(body.imageBase64),
       },
     },
