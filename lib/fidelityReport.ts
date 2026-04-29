@@ -17,6 +17,7 @@ export type FidelityImportantMoment = {
 
 export type FidelityFullReport = {
   status: "report_ready";
+  analysisSource: "gemini" | "fallback";
   riskLevel: "low" | "moderate" | "high" | "unclear";
   trustScore: number;
   summary: string;
@@ -29,6 +30,7 @@ export type FidelityFullReport = {
 
 const FALLBACK_REPORT: FidelityFullReport = {
   status: "report_ready",
+  analysisSource: "fallback",
   riskLevel: "unclear",
   trustScore: 50,
   summary:
@@ -52,6 +54,11 @@ const conversationDescriptions: Record<FidelityConversationType, string> = {
   not_sure: "The user is not sure who all participants are.",
 };
 
+const genderDescriptions = {
+  male: "man",
+  female: "woman",
+};
+
 function parseDataUrlImage(value: string): { mimeType: string; data: string } | null {
   const match = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
   if (!match) return null;
@@ -68,7 +75,7 @@ function buildImageParts(screenshots: string[]): GeminiPart[] {
     .filter((image): image is { mimeType: string; data: string } => Boolean(image))
     .slice(0, 6)
     .map((image) => ({
-      inlineData: {
+      inline_data: {
         mimeType: image.mimeType,
         data: image.data,
       },
@@ -128,6 +135,7 @@ function normalizeReport(response: unknown): FidelityFullReport {
 
   return {
     status: "report_ready",
+    analysisSource: "gemini",
     riskLevel,
     trustScore:
       typeof raw.trustScore === "number" && Number.isFinite(raw.trustScore)
@@ -154,6 +162,12 @@ ${conversationDescriptions[payload.screenshotConversationType]}
 
 Person name or nickname:
 ${payload.personNameOrNickname || "Not provided"}
+
+User gender:
+${payload.customerGender ? genderDescriptions[payload.customerGender] : "Not provided"}
+
+Person concerned gender:
+${payload.conversationPartnerGender ? genderDescriptions[payload.conversationPartnerGender] : "Not provided"}
 
 Main concerns:
 ${payload.mainConcerns.length > 0 ? payload.mainConcerns.join(", ") : "general_trust_analysis"}
@@ -215,7 +229,9 @@ export async function generateFidelityReport(
   try {
     const responseText = await generateGeminiContent({
       parts,
+      model: "gemini-2.5-flash",
       temperature: 0.15,
+      thinkingBudget: 1024,
       maxOutputTokens: 1600,
     });
     return normalizeReport(JSON.parse(extractJson(responseText)));

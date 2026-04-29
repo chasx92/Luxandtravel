@@ -1,6 +1,6 @@
 # Fidelity Test Gemini full-report workflow
 
-The Fidelity Test funnel keeps the pre-payment experience locked and frontend-only. The fake scan preview does not call Gemini, n8n, or any AI provider.
+The Fidelity Test funnel keeps the pre-payment experience locked and frontend-only. The fake scan preview does not call Gemini or any AI provider.
 
 Gemini is called only after payment succeeds through `POST /api/fidelity/full-report`.
 
@@ -14,6 +14,10 @@ GEMINI_API_KEY="your-gemini-api-key"
 
 Never expose `GEMINI_API_KEY` to the frontend.
 
+If you test on a Vercel Preview deployment, add `GEMINI_API_KEY` to the Preview environment too. A key configured only for Production is available only on the production deployment.
+
+If `GEMINI_API_KEY` is missing locally, the API still returns a safe fallback report so the funnel and result page can be tested without being blocked.
+
 ## Current payload source
 
 The form stores the normalized Fidelity payload in browser `sessionStorage` under:
@@ -22,7 +26,7 @@ The form stores the normalized Fidelity payload in browser `sessionStorage` unde
 pf_fidelity_automation_payload
 ```
 
-Current screenshot values are local preview data URLs. This is fine for local Gemini testing when the browser sends the saved payload after payment. TODO: move screenshots to private storage and pass signed URLs or private file IDs once backend persistence is connected.
+Compressed screenshot values are stored in browser IndexedDB under the Fidelity session ID, then reloaded by the post-payment report page before calling Gemini. TODO: move screenshots to private storage and pass signed URLs or private file IDs once backend persistence is connected.
 
 ## Full report endpoint
 
@@ -41,6 +45,8 @@ Production behavior:
     "service": "fidelity_test",
     "sessionId": "string",
     "screenshots": ["data:image/png;base64,..."],
+    "customerGender": "male",
+    "conversationPartnerGender": "female",
     "screenshotConversationType": "me_and_them",
     "personNameOrNickname": "Alex",
     "mainConcerns": ["romantic_or_flirty_tone", "time_gaps"],
@@ -64,6 +70,8 @@ curl -X POST http://localhost:3003/api/fidelity/full-report \
       "service": "fidelity_test",
       "sessionId": "local-test-session",
       "screenshots": [],
+      "customerGender": "male",
+      "conversationPartnerGender": "female",
       "screenshotConversationType": "me_and_them",
       "personNameOrNickname": "Alex",
       "mainConcerns": ["romantic_or_flirty_tone", "time_gaps"],
@@ -125,6 +133,7 @@ The API returns:
 ```json
 {
   "status": "report_ready",
+  "analysisSource": "gemini",
   "riskLevel": "low",
   "trustScore": 72,
   "summary": "Short cautious summary.",
@@ -155,10 +164,6 @@ The report must never say `cheating detected`, never accuse anyone directly, and
 Use careful wording such as `possible`, `signals`, `patterns`, `indicators`, and `may suggest`.
 
 If screenshots are unclear or missing, return `confidence: "low"` and explain that there is not enough evidence.
-
-## n8n role
-
-n8n is deprecated for the main Fidelity AI analysis. It may later be used only for email delivery, PDF generation, notifications, CRM updates, or logging.
 
 ## Future payment/session TODOs
 

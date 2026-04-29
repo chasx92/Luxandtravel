@@ -30,6 +30,7 @@ export type FidelityImportantMoment = {
 
 export type FidelityReportViewData = {
   status: "report_ready";
+  analysisSource?: "gemini" | "fallback";
   riskLevel: "low" | "moderate" | "high" | "unclear";
   trustScore: number;
   summary: string;
@@ -45,6 +46,7 @@ type FidelityReportViewProps = {
   sessionId?: string;
   createdAt?: string;
   isDemo?: boolean;
+  screenshots?: string[];
 };
 
 const severityStyles = {
@@ -113,9 +115,10 @@ function formatLabel(value: string) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-export function FidelityReportView({ report, sessionId, createdAt, isDemo }: FidelityReportViewProps) {
+export function FidelityReportView({ report, sessionId, createdAt, isDemo, screenshots = [] }: FidelityReportViewProps) {
   const checks = getRecommendedChecks(report);
   const score = Math.max(0, Math.min(100, Math.round(report.trustScore)));
+  const visibleScreenshots = screenshots.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-[#fff8f7] text-slate-950 print:bg-white">
@@ -165,7 +168,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
         <section className="mb-8">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-rose-100 bg-white px-4 py-2 text-sm font-bold text-rose-600 shadow-sm">
             <Shield className="h-4 w-4" />
-            Private paid report
+            {report.analysisSource === "gemini" ? "🔒 Gemini AI report" : "🔒 Private paid report"}
           </div>
           <h1 className="max-w-3xl text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
             Your private Fidelity report is ready
@@ -176,15 +179,49 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-500">
             {sessionId && <span>Session: {sessionId}</span>}
             {createdAt && <span>Created: {new Date(createdAt).toLocaleDateString()}</span>}
+            {report.analysisSource && (
+              <span className={report.analysisSource === "gemini" ? "font-semibold text-emerald-700" : "font-semibold text-amber-700"}>
+                Source: {report.analysisSource === "gemini" ? "Gemini" : "Fallback"}
+              </span>
+            )}
             {isDemo && <span className="font-semibold text-amber-700">Demo data</span>}
           </div>
         </section>
+
+        {visibleScreenshots.length > 0 ? (
+          <section className="mb-6 rounded-3xl border border-rose-100 bg-white p-5 shadow-xl shadow-rose-100/70 no-print">
+            <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-rose-500">🖼️ Uploaded screenshots</p>
+                <h2 className="mt-1 text-2xl font-black text-slate-950">Conversation evidence used</h2>
+              </div>
+              <p className="text-sm font-bold text-slate-500">
+                {visibleScreenshots.length} screenshot{visibleScreenshots.length === 1 ? "" : "s"} loaded
+              </p>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2">
+              {visibleScreenshots.map((screenshot, index) => (
+                <div key={`${screenshot.slice(0, 32)}-${index}`} className="h-48 w-28 shrink-0 overflow-hidden rounded-2xl border border-rose-100 bg-slate-100 shadow-sm">
+                  <img
+                    src={screenshot}
+                    alt={`Uploaded conversation screenshot ${index + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section className="mb-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold leading-6 text-amber-900 no-print">
+            Screenshots were not available on this device for the visual report preview. The API still receives any screenshots loaded from browser storage before report generation.
+          </section>
+        )}
 
         <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="print-card rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-bold uppercase tracking-[0.2em] text-rose-500">Trust Score</p>
+                <p className="text-sm font-bold uppercase tracking-[0.2em] text-rose-500">🧭 Trust Score</p>
                 <div className="mt-3 flex items-end gap-2">
                   <span className="text-6xl font-black text-slate-950">{score}</span>
                   <span className="pb-2 text-xl font-black text-slate-400">/100</span>
@@ -213,7 +250,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
           </div>
 
           <div className="print-card rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
-            <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-rose-500">Summary</p>
+            <p className="mb-3 text-sm font-bold uppercase tracking-[0.2em] text-rose-500">✨ Summary</p>
             <p className="text-lg leading-8 text-slate-700">{report.summary}</p>
           </div>
         </section>
@@ -221,7 +258,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
         <section className="mt-6 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
           <div className="space-y-6">
             <div className="print-card rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
-              <h2 className="text-2xl font-black text-slate-950">Detected Signals</h2>
+              <h2 className="text-2xl font-black text-slate-950">🚩 Detected Signals</h2>
               <div className="mt-5 space-y-3">
                 {report.detectedSignals.length > 0 ? (
                   report.detectedSignals.map((signal, index) => (
@@ -247,7 +284,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
             </div>
 
             <div className="print-card rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
-              <h2 className="text-2xl font-black text-slate-950">Important Moments</h2>
+              <h2 className="text-2xl font-black text-slate-950">⏱️ Important Moments</h2>
               <div className="mt-5 space-y-3">
                 {report.importantMoments.length > 0 ? (
                   report.importantMoments.map((moment, index) => (
@@ -267,7 +304,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
 
           <aside className="space-y-6">
             <div className="print-card rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
-              <h2 className="text-xl font-black text-slate-950">Questions to Ask</h2>
+              <h2 className="text-xl font-black text-slate-950">💬 Questions to Ask</h2>
               <div className="mt-4 space-y-3">
                 {report.questionsToAsk.map((question, index) => (
                   <div key={`${question}-${index}`} className="rounded-2xl bg-slate-50 p-4 text-sm font-semibold text-slate-700">
@@ -316,7 +353,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
 
         <section className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.8fr] no-print">
           <div className="rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
-            <h2 className="text-2xl font-black text-slate-950">Recommended checks</h2>
+            <h2 className="text-2xl font-black text-slate-950">🔎 Recommended checks</h2>
             <p className="mt-2 text-sm text-slate-600">Optional tools that can strengthen your report without changing this analysis.</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {checks.map((check) => {
@@ -356,7 +393,7 @@ export function FidelityReportView({ report, sessionId, createdAt, isDemo }: Fid
           <div className="rounded-3xl border border-rose-100 bg-white p-6 shadow-xl shadow-rose-100/70">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-rose-500" />
-              <h2 className="text-2xl font-black text-slate-950">Ask about this report</h2>
+              <h2 className="text-2xl font-black text-slate-950">🤔 Ask about this report</h2>
             </div>
             <p className="mt-2 text-sm text-slate-600">Coming soon: ask follow-up questions using this report as context.</p>
             <div className="mt-5 flex flex-wrap gap-2">

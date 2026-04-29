@@ -4,12 +4,16 @@ export type FidelityConversationType =
   | "group_chat"
   | "not_sure";
 
+export type FidelityGender = "male" | "female";
+
 export type FidelityRiskPreview = "low" | "moderate" | "high" | "unclear";
 
 export type FidelityAutomationPayload = {
   service: "fidelity_test";
   sessionId: string;
   screenshots: string[];
+  customerGender: FidelityGender | null;
+  conversationPartnerGender: FidelityGender | null;
   screenshotConversationType: FidelityConversationType;
   personNameOrNickname: string | null;
   mainConcerns: string[];
@@ -29,6 +33,8 @@ export type FidelityPreviewResponse = {
 export type FidelityFormAutomationState = {
   screenshots: File[];
   previews: string[];
+  customerGender: FidelityGender | "";
+  conversationPartnerGender: FidelityGender | "";
   conversationWith: string;
   personNameOrNickname: string;
   focusAreas: string[];
@@ -97,6 +103,8 @@ export function prepareFidelityAutomationPayload(
     sessionId: formState.sessionId || createFidelitySessionId(),
     // TODO: Upload screenshots to private object storage and send signed URLs instead of local preview data URLs.
     screenshots: formState.previews,
+    customerGender: formState.customerGender || null,
+    conversationPartnerGender: formState.conversationPartnerGender || null,
     screenshotConversationType: conversationTypeMap[formState.conversationWith] || "not_sure",
     personNameOrNickname: formState.personNameOrNickname.trim() || null,
     mainConcerns: formState.focusAreas,

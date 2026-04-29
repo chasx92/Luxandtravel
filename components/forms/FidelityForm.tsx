@@ -24,8 +24,10 @@ import {
   FIDELITY_PREVIEW_FALLBACK,
   createFidelitySessionId,
   prepareFidelityAutomationPayload,
+  type FidelityGender,
   type FidelityPreviewResponse,
 } from "@/lib/fidelityAutomation";
+import { saveFidelityScreenshots } from "@/lib/fidelityClientStorage";
 import { serviceContent } from "../../lib/content";
 import { TrustPanel } from "../ui/TrustPanel";
 import "@/styles/dating-search.css";
@@ -43,6 +45,8 @@ type CrossCheckKey = "datingSearch" | "faceTrace" | "followingAI";
 type FidelityAnalysisPayload = {
   service: "fidelity_test";
   screenshots: File[];
+  customerGender: FidelityGender | "";
+  conversationPartnerGender: FidelityGender | "";
   conversationWith: RelationshipType | "";
   personNameOrNickname: string;
   focusAreas: FocusArea[];
@@ -52,6 +56,13 @@ type FidelityAnalysisPayload = {
   concern: string;
   crossChecks: Record<CrossCheckKey, boolean>;
 };
+
+const TOTAL_STEPS = 8;
+
+const genderOptions: Array<{ value: FidelityGender; label: string }> = [
+  { value: "female", label: "Woman" },
+  { value: "male", label: "Man" },
+];
 
 const relationshipOptions: Array<{ value: RelationshipType; label: string }> = [
   { value: "me_and_target", label: "Me and the person concerned" },
@@ -100,6 +111,53 @@ const scanLabels = [
   "Preparing private report",
 ];
 
+const MAX_SCREENSHOT_WIDTH = 900;
+const SCREENSHOT_JPEG_QUALITY = 0.62;
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+async function compressScreenshot(file: File): Promise<string> {
+  const dataUrl = await readFileAsDataUrl(file);
+  const image = await loadImage(dataUrl);
+  const scale = Math.min(1, MAX_SCREENSHOT_WIDTH / image.width);
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const context = canvas.getContext("2d");
+  if (!context) return dataUrl;
+
+  context.drawImage(image, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", SCREENSHOT_JPEG_QUALITY);
+}
+
+function safeSessionSetItem(key: string, value: string) {
+  try {
+    sessionStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function FidelityForm() {
   const router = useRouter();
   const content = serviceContent.fidelity.form;
@@ -109,6 +167,8 @@ export function FidelityForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [screenshots, setScreenshots] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [customerGender, setCustomerGender] = useState<FidelityGender | "">("");
+  const [conversationPartnerGender, setConversationPartnerGender] = useState<FidelityGender | "">("");
   const [conversationWith, setConversationWith] = useState<RelationshipType | "">("");
   const [personNameOrNickname, setPersonNameOrNickname] = useState("");
   const [focusAreas, setFocusAreas] = useState<FocusArea[]>(["general_trust_analysis"]);
@@ -123,21 +183,23 @@ export function FidelityForm() {
   const [previewResponse, setPreviewResponse] = useState<FidelityPreviewResponse>(FIDELITY_PREVIEW_FALLBACK);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingImages, setIsPreparingImages] = useState(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (!files.length) return;
 
+    setIsPreparingImages(true);
     setScreenshots((prev) => [...prev, ...files]);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviews((prev) => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
-    setCurrentStep(1);
-    event.target.value = "";
+
+    try {
+      const compressedPreviews = await Promise.all(files.map((file) => compressScreenshot(file)));
+      setPreviews((prev) => [...prev, ...compressedPreviews]);
+      setCurrentStep(2);
+    } finally {
+      setIsPreparingImages(false);
+      event.target.value = "";
+    }
   };
 
   const removeImage = (index: number) => {
@@ -161,6 +223,8 @@ export function FidelityForm() {
   const prepareFidelityAnalysisPayload = (): FidelityAnalysisPayload => ({
     service: "fidelity_test",
     screenshots,
+    customerGender,
+    conversationPartnerGender,
     conversationWith,
     personNameOrNickname: personNameOrNickname.trim(),
     focusAreas,
@@ -175,6 +239,8 @@ export function FidelityForm() {
     prepareFidelityAutomationPayload({
       screenshots,
       previews,
+      customerGender,
+      conversationPartnerGender,
       conversationWith,
       personNameOrNickname,
       focusAreas,
@@ -182,14 +248,38 @@ export function FidelityForm() {
       sessionId: sessionIdRef.current,
     });
 
-  const persistFidelityAnalysisPayload = () => {
+  const persistFidelityAnalysisPayload = async () => {
     if (typeof window === "undefined") return;
 
     const payload = prepareFidelityAnalysisPayload();
     const automationPayload = prepareCurrentAutomationPayload();
-    sessionStorage.setItem("pf_fidelity_uploads", JSON.stringify(previews));
-    sessionStorage.setItem("pf_fidelity_automation_payload", JSON.stringify(automationPayload));
-    sessionStorage.setItem(
+    const browserPayload = {
+      ...automationPayload,
+      screenshots: [],
+      userContext: automationPayload.userContext,
+    };
+
+    try {
+      await saveFidelityScreenshots(automationPayload.sessionId, previews);
+    } catch {
+      browserPayload.userContext = `${browserPayload.userContext || ""}\n\nNote: Screenshots were uploaded but could not be saved in browser storage. Connect private file storage for production image retention.`.trim();
+    }
+
+    safeSessionSetItem("pf_fidelity_uploads", JSON.stringify(previews.slice(0, 2)));
+    const automationStored = safeSessionSetItem("pf_fidelity_automation_payload", JSON.stringify(browserPayload));
+
+    if (!automationStored) {
+      safeSessionSetItem(
+        "pf_fidelity_automation_payload",
+        JSON.stringify({
+          ...browserPayload,
+          screenshots: [],
+          userContext: `${browserPayload.userContext || ""}\n\nNote: Browser session storage was full. The report page will try to load screenshots from IndexedDB.`.trim(),
+        })
+      );
+    }
+
+    safeSessionSetItem(
       "pf_fidelity_analysis_payload",
       JSON.stringify({
         ...payload,
@@ -203,9 +293,9 @@ export function FidelityForm() {
     );
   };
 
-  const startFidelityScanPreview = () => {
-    persistFidelityAnalysisPayload();
-    setCurrentStep(6);
+  const startFidelityScanPreview = async () => {
+    await persistFidelityAnalysisPayload();
+    setCurrentStep(7);
     setScanPercent(0);
     setActiveScanLabels([0]);
     setPreviewResponse(FIDELITY_PREVIEW_FALLBACK);
@@ -223,22 +313,22 @@ export function FidelityForm() {
 
       if (progress >= 100) {
         window.clearInterval(interval);
-        window.setTimeout(() => setCurrentStep(7), 450);
+        window.setTimeout(() => setCurrentStep(8), 450);
       }
     }, 110);
   };
 
-  const submitFidelityLead = (event: React.FormEvent) => {
+  const submitFidelityLead = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    persistFidelityAnalysisPayload();
+    await persistFidelityAnalysisPayload();
 
     if (typeof window !== "undefined") {
-      sessionStorage.setItem("pf_fidelity_lead_email", email.trim());
+      safeSessionSetItem("pf_fidelity_lead_email", email.trim());
     }
 
     window.setTimeout(() => {
-      router.push("/fidelity-test/payment");
+      router.push("/fidelity-test/payment?plan=single");
     }, 700);
   };
 
@@ -246,7 +336,7 @@ export function FidelityForm() {
     setCurrentStep(step);
   };
 
-  const progressStep = currentStep;
+  const progressStep = Math.min(currentStep, TOTAL_STEPS);
   const selectedFocusLabels = focusOptions
     .filter((option) => focusAreas.includes(option.value))
     .map((option) => option.label);
@@ -274,12 +364,12 @@ export function FidelityForm() {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-slate-500">
-            {currentStep === 0 ? "Upload screenshots" : `Step ${progressStep} of 7`}
+            {currentStep === 0 ? "About you" : `Step ${progressStep} of ${TOTAL_STEPS}`}
           </span>
-          <span className="text-xs font-black text-[#ff4e71]">{Math.round((progressStep / 7) * 100)}%</span>
+          <span className="text-xs font-black text-[#ff4e71]">{Math.round((progressStep / TOTAL_STEPS) * 100)}%</span>
         </div>
-        <div className="grid grid-cols-7 gap-1.5">
-          {Array.from({ length: 7 }, (_, index) => (
+        <div className="grid grid-cols-8 gap-1.5">
+          {Array.from({ length: TOTAL_STEPS }, (_, index) => (
             <div
               key={index}
               className={`h-1.5 rounded-full transition-all ${
@@ -312,6 +402,79 @@ export function FidelityForm() {
         >
           {currentStep === 0 && (
             <div className="flex flex-col min-h-[390px]">
+              <div className="mb-5">
+                <h2 className="text-xl font-black text-slate-950">First, tell us who this is about</h2>
+                <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">
+                  This helps the AI read tone and context more accurately after payment.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                    You are
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {genderOptions.map((option) => (
+                      <button
+                        key={`customer-${option.value}`}
+                        type="button"
+                        onClick={() => setCustomerGender(option.value)}
+                        className={`rounded-2xl border px-4 py-4 text-center font-black transition-all ${
+                          customerGender === option.value
+                            ? "border-[#ff4e71] bg-rose-50 text-slate-950 shadow-sm"
+                            : "border-slate-100 bg-white text-slate-700 hover:border-rose-200"
+                        }`}
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          {option.label}
+                          {customerGender === option.value ? <Check className="w-4 h-4 text-[#ff4e71]" /> : null}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="mb-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                    The person in the conversation is
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {genderOptions.map((option) => (
+                      <button
+                        key={`partner-${option.value}`}
+                        type="button"
+                        onClick={() => setConversationPartnerGender(option.value)}
+                        className={`rounded-2xl border px-4 py-4 text-center font-black transition-all ${
+                          conversationPartnerGender === option.value
+                            ? "border-[#ff4e71] bg-rose-50 text-slate-950 shadow-sm"
+                            : "border-slate-100 bg-white text-slate-700 hover:border-rose-200"
+                        }`}
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          {option.label}
+                          {conversationPartnerGender === option.value ? <Check className="w-4 h-4 text-[#ff4e71]" /> : null}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => goToStep(1)}
+                disabled={!customerGender || !conversationPartnerGender}
+                className="dating-btn-primary mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>Continue</span>
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
+
+          {currentStep === 1 && (
+            <div className="flex flex-col min-h-[390px]">
               <label htmlFor="screenshots-upload" className="block text-sm font-bold text-slate-800 mb-3">
                 {content.label || "Upload conversation screenshots"}
               </label>
@@ -326,7 +489,7 @@ export function FidelityForm() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-slate-950 mb-1 font-black text-sm">
-                    {content.uploadText || "Click to upload screenshots"}
+                    {isPreparingImages ? "Preparing screenshots..." : content.uploadText || "Click to upload screenshots"}
                   </p>
                   <p className="text-xs text-slate-500 leading-snug">
                     {content.uploadHint || "JPG, PNG. Multiple chat screenshots accepted."}
@@ -358,7 +521,7 @@ export function FidelityForm() {
             </div>
           )}
 
-          {currentStep === 1 && (
+          {currentStep === 2 && (
             <div className="flex flex-col min-h-[390px]">
               <div className="mb-4">
                 <h2 className="text-xl font-black text-slate-950">Screenshots uploaded</h2>
@@ -403,14 +566,14 @@ export function FidelityForm() {
                 </p>
               </div>
 
-              <button type="button" onClick={() => goToStep(2)} className="dating-btn-primary mt-4">
+              <button type="button" onClick={() => goToStep(3)} className="dating-btn-primary mt-4">
                 <span>Continue</span>
                 <ArrowRight size={18} />
               </button>
             </div>
           )}
 
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <div className="flex flex-col min-h-[390px]">
               <h2 className="text-xl font-black text-slate-950 mb-1">Who are these messages between?</h2>
               <p className="text-sm font-semibold text-slate-500 mb-4">
@@ -449,12 +612,12 @@ export function FidelityForm() {
               />
 
               <div className="mt-auto flex gap-3 pt-4">
-                <button type="button" onClick={() => goToStep(1)} className="dating-btn-secondary !px-4">
+                <button type="button" onClick={() => goToStep(2)} className="dating-btn-secondary !px-4">
                   <ChevronLeft size={20} />
                 </button>
                 <button
                   type="button"
-                  onClick={() => goToStep(3)}
+                  onClick={() => goToStep(4)}
                   disabled={!conversationWith}
                   className="dating-btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -465,7 +628,7 @@ export function FidelityForm() {
             </div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <div className="flex flex-col min-h-[390px]">
               <h2 className="text-xl font-black text-slate-950 mb-1">What feels off?</h2>
               <p className="text-sm font-semibold text-slate-500 mb-4">Pick what best matches your doubt. You can choose more than one.</p>
@@ -500,10 +663,10 @@ export function FidelityForm() {
               </div>
 
               <div className="mt-auto flex gap-3 pt-4">
-                <button type="button" onClick={() => goToStep(2)} className="dating-btn-secondary !px-4">
+                <button type="button" onClick={() => goToStep(3)} className="dating-btn-secondary !px-4">
                   <ChevronLeft size={20} />
                 </button>
-                <button type="button" onClick={() => goToStep(4)} className="dating-btn-primary">
+                <button type="button" onClick={() => goToStep(5)} className="dating-btn-primary">
                   <span>Continue</span>
                   <ArrowRight size={18} />
                 </button>
@@ -511,7 +674,7 @@ export function FidelityForm() {
             </div>
           )}
 
-          {currentStep === 4 && (
+          {currentStep === 5 && (
             <div className="flex flex-col min-h-[390px]">
               <div className="mb-4">
                 <div className="text-xs font-black uppercase tracking-[0.16em] text-[#ff4e71] mb-2">Optional</div>
@@ -529,20 +692,20 @@ export function FidelityForm() {
               />
 
               <div className="mt-auto flex gap-3 pt-4">
-                <button type="button" onClick={() => goToStep(3)} className="dating-btn-secondary !px-4">
+                <button type="button" onClick={() => goToStep(4)} className="dating-btn-secondary !px-4">
                   <ChevronLeft size={20} />
                 </button>
-                <button type="button" onClick={() => goToStep(5)} className="dating-btn-secondary !flex-1">
+                <button type="button" onClick={() => goToStep(6)} className="dating-btn-secondary !flex-1">
                   Skip
                 </button>
-                <button type="button" onClick={() => goToStep(5)} className="dating-btn-primary !flex-1">
+                <button type="button" onClick={() => goToStep(6)} className="dating-btn-primary !flex-1">
                   Continue
                 </button>
               </div>
             </div>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 6 && (
             <div className="flex flex-col min-h-[390px]">
               <div className="mb-4">
                 <div className="text-xs font-black uppercase tracking-[0.16em] text-[#ff4e71] mb-2">Optional</div>
@@ -592,7 +755,7 @@ export function FidelityForm() {
               </div>
 
               <div className="mt-auto flex gap-3 pt-4">
-                <button type="button" onClick={() => goToStep(4)} className="dating-btn-secondary !px-4">
+                <button type="button" onClick={() => goToStep(5)} className="dating-btn-secondary !px-4">
                   <ChevronLeft size={20} />
                 </button>
                 <button type="button" onClick={startFidelityScanPreview} className="dating-btn-secondary !flex-1">
@@ -605,7 +768,7 @@ export function FidelityForm() {
             </div>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 7 && (
             <div className="flex flex-col min-h-[390px]">
               <div className="analysis-pulse-card analysis-pulse-fidelity">
                 <div className="analysis-radar-dot" />
@@ -656,7 +819,7 @@ export function FidelityForm() {
             </div>
           )}
 
-          {currentStep === 7 && (
+          {currentStep === 8 && (
             <div className="flex flex-col min-h-[390px] text-center">
               <div className="dating-check-circle mx-auto mb-4">
                 <div className="w-24 h-24 rounded-full bg-rose-50 flex items-center justify-center">

@@ -14,6 +14,8 @@ function isValidPayload(payload: Partial<FidelityAutomationPayload> | undefined)
     payload?.service === "fidelity_test" &&
     typeof payload.sessionId === "string" &&
     Array.isArray(payload.screenshots) &&
+    (payload.customerGender === "male" || payload.customerGender === "female" || payload.customerGender === null || payload.customerGender === undefined) &&
+    (payload.conversationPartnerGender === "male" || payload.conversationPartnerGender === "female" || payload.conversationPartnerGender === null || payload.conversationPartnerGender === undefined) &&
     typeof payload.screenshotConversationType === "string" &&
     Array.isArray(payload.mainConcerns) &&
     payload.source === "profilefinder_web"

@@ -5,15 +5,17 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AlertCircle, Loader2, Shield } from "lucide-react";
 import { FidelityReportView, type FidelityReportViewData } from "@/components/reports/FidelityReportView";
+import { loadFidelityScreenshots } from "@/lib/fidelityClientStorage";
 import type { FidelityAutomationPayload } from "@/lib/fidelityAutomation";
 
 type ReportState =
   | { status: "loading"; report: null; message: string }
-  | { status: "ready"; report: FidelityReportViewData; payload: FidelityAutomationPayload | null; isDemo: boolean }
-  | { status: "error"; report: FidelityReportViewData; payload: FidelityAutomationPayload | null; isDemo: boolean; message: string };
+  | { status: "ready"; report: FidelityReportViewData; payload: FidelityAutomationPayload | null; isDemo: boolean; screenshots: string[] }
+  | { status: "error"; report: FidelityReportViewData; payload: FidelityAutomationPayload | null; isDemo: boolean; screenshots: string[]; message: string };
 
 const DEMO_REPORT: FidelityReportViewData = {
   status: "report_ready",
+  analysisSource: "fallback",
   riskLevel: "unclear",
   trustScore: 50,
   summary:
@@ -64,7 +66,7 @@ function readStoredReport(sessionId: string): FidelityReportViewData | null {
 
   try {
     const parsed = JSON.parse(raw);
-    return parsed?.status === "report_ready" ? parsed : null;
+    return parsed?.version === 2 && parsed?.report?.status === "report_ready" ? parsed.report : null;
   } catch {
     return null;
   }
@@ -91,13 +93,20 @@ export default function FidelityReportPage() {
           report: DEMO_REPORT,
           payload: null,
           isDemo: true,
+          screenshots: [],
         });
         return;
       }
 
+      const storedScreenshots = await loadFidelityScreenshots(payload.sessionId).catch(() => []);
+      const reportPayload = {
+        ...payload,
+        screenshots: storedScreenshots.length > 0 ? storedScreenshots : payload.screenshots,
+      };
+
       const cachedReport = readStoredReport(payload.sessionId);
       if (cachedReport) {
-        setState({ status: "ready", report: cachedReport, payload, isDemo: false });
+        setState({ status: "ready", report: cachedReport, payload: reportPayload, isDemo: false, screenshots: reportPayload.screenshots });
         return;
       }
 
@@ -106,7 +115,7 @@ export default function FidelityReportPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           // TODO: Replace this temporary paymentConfirmed flag with server-side Stripe/session verification.
-          body: JSON.stringify({ paymentConfirmed: true, payload }),
+          body: JSON.stringify({ paymentConfirmed: true, payload: reportPayload }),
         });
 
         if (!response.ok) {
@@ -114,18 +123,22 @@ export default function FidelityReportPage() {
         }
 
         const report = (await response.json()) as FidelityReportViewData;
-        sessionStorage.setItem(`pf_fidelity_full_report_${payload.sessionId}`, JSON.stringify(report));
+        sessionStorage.setItem(
+          `pf_fidelity_full_report_${payload.sessionId}`,
+          JSON.stringify({ version: 2, report })
+        );
         sessionStorage.setItem(
           "pf_fidelity_last_report",
           JSON.stringify({
             sessionId: payload.sessionId,
             createdAt: payload.createdAt,
+            screenshotsCount: reportPayload.screenshots.length,
             report,
           })
         );
 
         if (!cancelled) {
-          setState({ status: "ready", report, payload, isDemo: false });
+          setState({ status: "ready", report, payload: reportPayload, isDemo: false, screenshots: reportPayload.screenshots });
         }
       } catch {
         if (!cancelled) {
@@ -134,6 +147,7 @@ export default function FidelityReportPage() {
             report: DEMO_REPORT,
             payload,
             isDemo: true,
+            screenshots: storedScreenshots,
             message:
               "The report page stayed available, but the backend report request could not complete. The funnel is not blocked.",
           });
@@ -187,6 +201,7 @@ export default function FidelityReportPage() {
         sessionId={state.payload?.sessionId || routeSessionId}
         createdAt={state.payload?.createdAt}
         isDemo={state.isDemo}
+        screenshots={state.screenshots}
       />
     </>
   );

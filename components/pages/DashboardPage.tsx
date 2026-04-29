@@ -8,6 +8,7 @@ import {
     Activity, Star, ChevronRight, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
+import { loadFidelityScreenshots } from '@/lib/fidelityClientStorage';
 import { useCredits } from '@/lib/useCredits';
 
 interface ServiceCardProps {
@@ -28,10 +29,12 @@ interface ServiceCardProps {
 type FidelityDashboardReport = {
     sessionId: string;
     createdAt: string;
+    screenshotsCount?: number;
     report: {
         riskLevel: 'low' | 'moderate' | 'high' | 'unclear';
         trustScore: number;
         status: string;
+        analysisSource?: 'gemini' | 'fallback';
     };
 };
 
@@ -100,18 +103,32 @@ function ServiceCard({ service, index, credits }: ServiceCardProps) {
 export function DashboardPage() {
     const { credits, getCredits, getTotalCredits } = useCredits();
     const [latestFidelityReport, setLatestFidelityReport] = useState<FidelityDashboardReport | null>(null);
+    const [latestFidelityScreenshots, setLatestFidelityScreenshots] = useState<string[]>([]);
 
     useEffect(() => {
+        let mounted = true;
+
         try {
             const raw = sessionStorage.getItem('pf_fidelity_last_report');
             if (!raw) return;
             const parsed = JSON.parse(raw) as FidelityDashboardReport;
             if (parsed?.sessionId && parsed?.report?.status === 'report_ready') {
                 setLatestFidelityReport(parsed);
+                loadFidelityScreenshots(parsed.sessionId)
+                    .then((screenshots) => {
+                        if (mounted) setLatestFidelityScreenshots(screenshots.slice(0, 3));
+                    })
+                    .catch(() => {
+                        if (mounted) setLatestFidelityScreenshots([]);
+                    });
             }
         } catch {
             setLatestFidelityReport(null);
         }
+
+        return () => {
+            mounted = false;
+        };
     }, []);
 
     const services = [
@@ -323,6 +340,22 @@ export function DashboardPage() {
                                         <p className="mt-1 text-sm text-gray-400">
                                             Created {new Date(latestFidelityReport.createdAt).toLocaleDateString()} • Risk {latestFidelityReport.report.riskLevel} • Trust score {latestFidelityReport.report.trustScore}/100
                                         </p>
+                                        <p className="mt-1 text-xs font-semibold text-gray-500">
+                                            {latestFidelityReport.screenshotsCount || latestFidelityScreenshots.length || 0} screenshots • Source {latestFidelityReport.report.analysisSource === 'gemini' ? 'Gemini' : 'Fallback'}
+                                        </p>
+                                        {latestFidelityScreenshots.length > 0 && (
+                                            <div className="mt-3 flex gap-2">
+                                                {latestFidelityScreenshots.map((screenshot, index) => (
+                                                    <div key={`${screenshot.slice(0, 24)}-${index}`} className="h-14 w-10 overflow-hidden rounded-lg border border-white/10 bg-white/10">
+                                                        <img
+                                                            src={screenshot}
+                                                            alt={`Fidelity screenshot preview ${index + 1}`}
+                                                            className="h-full w-full object-cover"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <Link
