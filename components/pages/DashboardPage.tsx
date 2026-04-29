@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Search, Eye, Scan, Heart, MessageSquare, Crown,
@@ -24,6 +24,16 @@ interface ServiceCardProps {
     index: number;
     credits: number;
 }
+
+type FidelityDashboardReport = {
+    sessionId: string;
+    createdAt: string;
+    report: {
+        riskLevel: 'low' | 'moderate' | 'high' | 'unclear';
+        trustScore: number;
+        status: string;
+    };
+};
 
 function ServiceCard({ service, index, credits }: ServiceCardProps) {
     const [isHovered, setIsHovered] = useState(false);
@@ -89,6 +99,20 @@ function ServiceCard({ service, index, credits }: ServiceCardProps) {
 
 export function DashboardPage() {
     const { credits, getCredits, getTotalCredits } = useCredits();
+    const [latestFidelityReport, setLatestFidelityReport] = useState<FidelityDashboardReport | null>(null);
+
+    useEffect(() => {
+        try {
+            const raw = sessionStorage.getItem('pf_fidelity_last_report');
+            if (!raw) return;
+            const parsed = JSON.parse(raw) as FidelityDashboardReport;
+            if (parsed?.sessionId && parsed?.report?.status === 'report_ready') {
+                setLatestFidelityReport(parsed);
+            }
+        } catch {
+            setLatestFidelityReport(null);
+        }
+    }, []);
 
     const services = [
         {
@@ -124,11 +148,11 @@ export function DashboardPage() {
         {
             id: 'fidelity',
             name: 'Fidelity Check',
-            description: 'Detect dating profiles by name & location',
+            description: 'Analyze chat screenshots and trust-related signals',
             icon: <Search className="w-7 h-7 text-white" />,
             gradient: 'bg-gradient-to-br from-red-500 to-orange-500',
             href: '/dashboard/fidelity-check',
-            stats: '24/7 monitoring',
+            stats: 'Private AI reports',
             creditKey: 'fidelity' as const,
         },
         {
@@ -276,27 +300,56 @@ export function DashboardPage() {
                 {/* Recent Activity */}
                 <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold text-white">Recent Searches</h3>
+                        <h3 className="text-lg font-bold text-white">Recent Reports</h3>
                         <Link href="/results" className="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
                             View All <ChevronRight className="w-4 h-4" />
                         </Link>
                     </div>
 
-                    {/* Empty State */}
-                    <div className="text-center py-8">
-                        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Search className="w-8 h-8 text-gray-400" />
+                    {latestFidelityReport ? (
+                        <div className="rounded-2xl border border-red-500/20 bg-gradient-to-r from-red-500/10 to-orange-500/10 p-4">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div className="flex items-start gap-4">
+                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-red-500 to-orange-500">
+                                        <Shield className="h-6 w-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <h4 className="font-bold text-white">Fidelity Test</h4>
+                                            <span className="rounded-full bg-green-500/10 px-2.5 py-1 text-xs font-bold text-green-400">
+                                                {latestFidelityReport.report.status.replace('_', ' ')}
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-sm text-gray-400">
+                                            Created {new Date(latestFidelityReport.createdAt).toLocaleDateString()} • Risk {latestFidelityReport.report.riskLevel} • Trust score {latestFidelityReport.report.trustScore}/100
+                                        </p>
+                                    </div>
+                                </div>
+                                <Link
+                                    href={`/report/fidelity/${latestFidelityReport.sessionId}`}
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-bold text-gray-950 transition hover:bg-red-50"
+                                >
+                                    Open Report
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
+                            </div>
                         </div>
-                        <p className="text-gray-400 mb-2">No searches yet</p>
-                        <p className="text-sm text-gray-500 mb-4">Start by launching a search from any service above</p>
-                        <Link
-                            href="/dating-search"
-                            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                        >
-                            <Search className="w-4 h-4" />
-                            Start First Search
-                        </Link>
-                    </div>
+                    ) : (
+                        <div className="text-center py-8">
+                            <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Search className="w-8 h-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-400 mb-2">No reports yet</p>
+                            <p className="text-sm text-gray-500 mb-4">Start by launching a search from any service above</p>
+                            <Link
+                                href="/dating-search"
+                                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                            >
+                                <Search className="w-4 h-4" />
+                                Start First Search
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 {/* Footer Help */}

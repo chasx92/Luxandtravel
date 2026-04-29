@@ -131,7 +131,7 @@ export const PAYMENT_CONFIG: Record<string, Omit<PaymentServiceConfig, 'previewC
         singleReportPrice: 14.90,
         singleReportOriginalPrice: 29.90,
         accentColors: FIDELITY_COLORS,
-        resultPage: '/results/fidelity',
+        resultPage: '/report/fidelity/latest',
         features: [
             { name: '💔 Dating App Detection', description: 'Scan Tinder, Bumble, Badoo & 20+ apps' },
             { name: '📍 Location Tracking', description: 'Geolocation-based profile search' },

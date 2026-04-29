@@ -277,26 +277,39 @@ const getServiceGradient = (service: string): string => {
 
 // Map URL path segments to service IDs
 const pathToServiceId: Record<string, string> = {
+    'face-trace': 'faceTrace',
     'facetrace': 'faceTrace',
+    'fidelity-test': 'fidelity',
     'fidelity': 'fidelity',
+    'following-ai': 'following',
     'chat-analysis': 'chatAnalysis',
     'instagram': 'following',
+    'dating-search': 'dating',
     'dating': 'dating',
+};
+
+const paymentServiceToContextService: Record<string, 'dating' | 'facetrace' | 'following' | 'fidelity'> = {
+    dating: 'dating',
+    faceTrace: 'facetrace',
+    following: 'following',
+    fidelity: 'fidelity',
 };
 
 export function PaymentPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const { searchTarget, selectedService } = useService();
+    const { searchTarget, selectedService, setSelectedService } = useService();
 
     // Get service from URL path, query params, or context
     const getServiceFromPath = (): string => {
         if (pathname) {
-            const segments = pathname.split('/');
-            const lastSegment = segments[segments.length - 1];
-            if (pathToServiceId[lastSegment]) {
-                return pathToServiceId[lastSegment];
+            const segments = pathname.split('/').filter(Boolean);
+
+            for (const segment of segments) {
+                if (pathToServiceId[segment]) {
+                    return pathToServiceId[segment];
+                }
             }
         }
         return '';
@@ -318,6 +331,13 @@ export function PaymentPage() {
             setSelectedPlan(planParam);
         }
     }, [searchParams]);
+
+    useEffect(() => {
+        const contextService = paymentServiceToContextService[activeService];
+        if (contextService) {
+            setSelectedService(contextService);
+        }
+    }, [activeService, setSelectedService]);
 
     // Get the preview component for current service
     const PreviewComponent = PreviewComponents[activeService] || DatingResultsPreview;
