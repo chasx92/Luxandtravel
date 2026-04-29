@@ -32,6 +32,31 @@ const DEMO_REPORT: FidelityReportViewData = {
     "This analysis highlights possible conversation patterns and is not proof of cheating or wrongdoing.",
 };
 
+function buildGeminiFallbackReport(payload: FidelityAutomationPayload, message: string): FidelityReportViewData {
+  const concerns =
+    payload.mainConcerns.length > 0
+      ? payload.mainConcerns.map((concern) => concern.replace(/_/g, " ")).join(", ")
+      : "general trust analysis";
+
+  return {
+    status: "report_ready",
+    analysisSource: "fallback",
+    riskLevel: "unclear",
+    trustScore: 50,
+    summary: `Your form payload was received with ${payload.screenshots.length} screenshot${payload.screenshots.length === 1 ? "" : "s"} and these concerns: ${concerns}. Gemini could not finish the structured report yet: ${message}`,
+    detectedSignals: [],
+    importantMoments: [],
+    questionsToAsk: [
+      "Can you confirm the conversation context?",
+      "Were there timing gaps or explanations that felt unclear?",
+      "Do you have screenshots from before or after this exchange?",
+    ],
+    confidence: "low",
+    disclaimer:
+      "This fallback confirms the submitted context was received. It is not proof of cheating, dishonesty, or wrongdoing.",
+  };
+}
+
 function isFidelityPayload(value: unknown): value is FidelityAutomationPayload {
   if (!value || typeof value !== "object") return false;
 
@@ -105,7 +130,7 @@ export default function FidelityReportPage() {
       };
 
       const cachedReport = readStoredReport(payload.sessionId);
-      if (cachedReport) {
+      if (cachedReport?.analysisSource === "gemini") {
         setState({ status: "ready", report: cachedReport, payload: reportPayload, isDemo: false, screenshots: reportPayload.screenshots });
         return;
       }
@@ -149,10 +174,10 @@ export default function FidelityReportPage() {
         if (!cancelled) {
           setState({
             status: "error",
-            report: DEMO_REPORT,
-            payload,
-            isDemo: true,
-            screenshots: storedScreenshots,
+            report: buildGeminiFallbackReport(reportPayload, error instanceof Error ? error.message : "Unknown Gemini error"),
+            payload: reportPayload,
+            isDemo: false,
+            screenshots: reportPayload.screenshots,
             message:
               error instanceof Error
                 ? error.message

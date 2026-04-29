@@ -25,6 +25,34 @@ const FALLBACK_ANALYSIS: FidelityScreenshotAnalysis = {
   followUpQuestions: ["Can you upload a clearer screenshot or add more conversation context?"],
 };
 
+const screenshotAnalysisSchema = {
+  type: "OBJECT",
+  properties: {
+    extractedMessages: { type: "ARRAY", items: { type: "STRING" } },
+    concernScore: { type: "INTEGER" },
+    redFlags: { type: "ARRAY", items: { type: "STRING" } },
+    ambiguitySignals: { type: "ARRAY", items: { type: "STRING" } },
+    uncertainty: { type: "STRING" },
+    followUpQuestions: { type: "ARRAY", items: { type: "STRING" } },
+  },
+  required: [
+    "extractedMessages",
+    "concernScore",
+    "redFlags",
+    "ambiguitySignals",
+    "uncertainty",
+    "followUpQuestions",
+  ],
+  propertyOrdering: [
+    "extractedMessages",
+    "concernScore",
+    "redFlags",
+    "ambiguitySignals",
+    "uncertainty",
+    "followUpQuestions",
+  ],
+};
+
 function stripDataUrlPrefix(value: string) {
   return value.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, "");
 }
@@ -129,7 +157,8 @@ export async function POST(request: Request) {
       parts,
       temperature: 0.2,
       thinkingBudget: 1024,
-      maxOutputTokens: 1400,
+      maxOutputTokens: 2048,
+      responseSchema: screenshotAnalysisSchema,
     });
 
     return NextResponse.json({

@@ -59,6 +59,70 @@ const genderDescriptions = {
   female: "woman",
 };
 
+const fidelityReportSchema = {
+  type: "OBJECT",
+  properties: {
+    status: { type: "STRING" },
+    riskLevel: { type: "STRING", enum: ["low", "moderate", "high", "unclear"] },
+    trustScore: { type: "INTEGER" },
+    summary: { type: "STRING" },
+    detectedSignals: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          type: { type: "STRING" },
+          severity: { type: "STRING", enum: ["low", "medium", "high"] },
+          title: { type: "STRING" },
+          explanation: { type: "STRING" },
+        },
+        required: ["type", "severity", "title", "explanation"],
+        propertyOrdering: ["type", "severity", "title", "explanation"],
+      },
+    },
+    importantMoments: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          moment: { type: "STRING" },
+          whyItMatters: { type: "STRING" },
+        },
+        required: ["moment", "whyItMatters"],
+        propertyOrdering: ["moment", "whyItMatters"],
+      },
+    },
+    questionsToAsk: {
+      type: "ARRAY",
+      items: { type: "STRING" },
+    },
+    confidence: { type: "STRING", enum: ["low", "medium", "high"] },
+    disclaimer: { type: "STRING" },
+  },
+  required: [
+    "status",
+    "riskLevel",
+    "trustScore",
+    "summary",
+    "detectedSignals",
+    "importantMoments",
+    "questionsToAsk",
+    "confidence",
+    "disclaimer",
+  ],
+  propertyOrdering: [
+    "status",
+    "riskLevel",
+    "trustScore",
+    "summary",
+    "detectedSignals",
+    "importantMoments",
+    "questionsToAsk",
+    "confidence",
+    "disclaimer",
+  ],
+};
+
 function parseDataUrlImage(value: string): { mimeType: string; data: string } | null {
   const match = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
   if (!match) return null;
@@ -232,7 +296,8 @@ export async function generateFidelityReport(
       model: "gemini-2.5-flash",
       temperature: 0.15,
       thinkingBudget: 1024,
-      maxOutputTokens: 1600,
+      maxOutputTokens: 4096,
+      responseSchema: fidelityReportSchema,
     });
     return normalizeReport(JSON.parse(extractJson(responseText)));
   } catch (error) {

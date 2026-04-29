@@ -20,6 +20,7 @@ type GeminiGenerateContentOptions = {
   thinkingBudget?: number;
   maxOutputTokens?: number;
   responseMimeType?: "application/json" | "text/plain";
+  responseSchema?: Record<string, unknown>;
 };
 
 export type GeminiUsageMetadata = Record<string, unknown>;
@@ -74,6 +75,7 @@ export async function generateGeminiContentResult({
   thinkingBudget,
   maxOutputTokens = 1400,
   responseMimeType = "application/json",
+  responseSchema,
 }: GeminiGenerateContentOptions): Promise<GeminiGenerateContentResult> {
   const apiKey = process.env.GEMINI_API_KEY;
 
@@ -89,6 +91,10 @@ export async function generateGeminiContentResult({
 
   if (typeof thinkingBudget === "number") {
     generationConfig.thinkingConfig = { thinkingBudget };
+  }
+
+  if (responseSchema) {
+    generationConfig.responseSchema = responseSchema;
   }
 
   const response = await fetch(getGeminiUrl(model), {
@@ -113,7 +119,14 @@ export async function generateGeminiContentResult({
     throw new GeminiApiError(message, response.status, data);
   }
 
-  const text = data?.candidates?.[0]?.content?.parts
+  const candidate = data?.candidates?.[0];
+  const finishReason = candidate?.finishReason;
+
+  if (finishReason === "MAX_TOKENS") {
+    throw new GeminiApiError("Gemini response was truncated before valid JSON could be returned", 502, data);
+  }
+
+  const text = candidate?.content?.parts
     ?.map((part: { text?: string }) => part.text)
     .filter(Boolean)
     .join("\n");
