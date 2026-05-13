@@ -1,0 +1,155 @@
+@import url('https://db.onlinewebfonts.com/c/440b53b1a1c65037f944ff19259d8014?family=Nokia+Cellphone+FC+Small');
+@import "tailwindcss";
+
+@theme {
+  --font-instrument: "Instrument Serif", serif;
+  --font-serif: "Instrument Serif", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-nokia: "Nokia Cellphone FC Small", monospace;
+}
+
+@utility font-instrument {
+  font-family: "Instrument Serif", serif;
+}
+
+:root {
+  font-family: var(--font-sans);
+  color: #F6F1E8;
+  background: #050505;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  background: #050505;
+}
+
+[id] {
+  scroll-margin-top: 96px;
+}
+
+@media (min-width: 768px) {
+  [id] {
+    scroll-margin-top: 112px;
+  }
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #050505;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.accent-gradient {
+  background: linear-gradient(90deg, #D8C7A3 0%, #C8A96A 45%, #8C6A3D 100%);
+}
+
+.luxury-border {
+  border: 1px solid rgba(246, 241, 232, 0.12);
+}
+
+.luxury-surface {
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.apple-display {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: -0.055em;
+}
+
+.apple-copy {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+@keyframes role-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-scroll-down {
+  animation: scroll-down 1.5s ease-in-out infinite;
+}
+
+.animate-role-fade-in {
+  animation: role-fade-in 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
