@@ -219,6 +219,7 @@ function TypingMessages() {
 
 function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const links = [
     { label: "Accueil", href: "#hero" },
     { label: "Événements", href: "#signatures" },
@@ -236,13 +237,13 @@ function Navbar() {
 
   return (
     <motion.header
-      className="pointer-events-none fixed left-1/2 top-4 z-50 w-[calc(100%-28px)] max-w-6xl -translate-x-1/2 md:top-6 md:w-[95%]"
+      className="pointer-events-none fixed left-1/2 top-4 z-50 w-[calc(100%-28px)] max-w-[620px] -translate-x-1/2 md:top-6 md:w-[92%]"
       initial={{ opacity: 0, y: -18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, delay: 0.15, ease }}
     >
       <nav
-        className={`pointer-events-auto flex min-h-[58px] items-center justify-between rounded-[28px] border px-4 py-2 shadow-[0_14px_46px_rgba(0,0,0,0.18)] backdrop-blur-xl transition-all duration-500 md:min-h-0 md:rounded-full md:px-6 md:py-3 ${
+        className={`pointer-events-auto flex min-h-[58px] items-center justify-between rounded-[28px] border px-4 py-2 shadow-[0_14px_46px_rgba(0,0,0,0.18)] backdrop-blur-xl transition-all duration-500 md:min-h-[58px] md:px-5 md:py-2 ${
           isScrolled
             ? "border-white/15 bg-black/45"
             : "border-white/10 bg-black/30 md:bg-black/20"
@@ -250,33 +251,48 @@ function Navbar() {
       >
         <a
           href="#hero"
-          className="flex max-w-[190px] flex-col gap-[2px] font-sans text-[12px] font-medium uppercase leading-none tracking-[0.34em] text-[#F6F1E8] no-underline md:block md:max-w-none md:text-[14px] md:tracking-[0.18em]"
+          className="flex max-w-[190px] flex-col gap-[2px] font-sans text-[12px] font-medium uppercase leading-none tracking-[0.34em] text-[#F6F1E8] no-underline md:text-[13px] md:tracking-[0.32em]"
         >
           <span>MAISON</span>
           <span>CHALAMBERT</span>
         </a>
 
-        <div className="hidden items-center gap-10 md:flex">
-          {links.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="rounded-full px-3 py-2 font-sans text-[13px] text-[#F6F1E8]/72 no-underline transition-all duration-300 hover:bg-white/[0.055] hover:text-[#F6F1E8]"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        <a
-          href="#contact"
-          className="group relative overflow-hidden whitespace-nowrap rounded-[22px] border border-[#F6F1E8]/18 bg-white/[0.035] px-4 py-2.5 font-sans text-[13px] font-normal text-[#F6F1E8]/82 no-underline backdrop-blur-md transition-all duration-300 hover:scale-[1.01] hover:border-[#C8A96A]/45 hover:bg-white/[0.065] hover:text-[#F6F1E8] md:rounded-full md:border-transparent md:bg-[#F6F1E8] md:px-5 md:py-2.5 md:text-[13px] md:font-medium md:text-[#050505] md:shadow-[inset_0_-4px_4px_rgba(0,0,0,0.12)] md:outline md:outline-1 md:-outline-offset-1 md:outline-white/20"
+        <button
+          type="button"
+          aria-label="Ouvrir le menu"
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((open) => !open)}
+          className="group flex h-10 w-10 items-center justify-center rounded-full border border-[#F6F1E8]/16 bg-white/[0.035] text-[#F6F1E8]/82 backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:border-[#C8A96A]/45 hover:bg-white/[0.065]"
         >
-          <span className="absolute left-[10%] top-[1px] hidden h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-white/70 to-transparent transition-transform duration-500 group-hover:scale-x-105 md:block" />
-          <span className="relative z-10 md:hidden">Contact</span>
-          <span className="relative z-10 hidden md:inline">Nous contacter</span>
-        </a>
+          <span className="flex w-4 flex-col gap-[5px]">
+            <span className={`h-px w-full bg-current transition-transform duration-300 ${isMenuOpen ? "translate-y-[3px] rotate-45" : ""}`} />
+            <span className={`h-px w-full bg-current transition-transform duration-300 ${isMenuOpen ? "-translate-y-[3px] -rotate-45" : ""}`} />
+          </span>
+        </button>
       </nav>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="pointer-events-auto absolute right-0 top-[calc(100%+10px)] w-56 overflow-hidden rounded-[24px] border border-white/10 bg-black/55 p-2 shadow-[0_24px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl"
+            initial={{ opacity: 0, y: -8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.28, ease }}
+          >
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="block rounded-2xl px-4 py-3 font-sans text-sm text-[#F6F1E8]/78 no-underline transition-all duration-300 hover:bg-white/[0.06] hover:text-[#F6F1E8]"
+              >
+                {link.label}
+              </a>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
@@ -324,7 +340,7 @@ function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen flex-col items-start justify-end overflow-hidden bg-[#050505] px-6 pb-28 pt-28 md:px-10 md:pb-24 md:pt-32 lg:px-16"
+      className="relative flex min-h-screen flex-col items-start justify-end overflow-hidden bg-[#050505] px-6 pb-28 pt-28 md:px-10 md:pb-28 md:pt-32 lg:px-16"
     >
       <div ref={videoWrapRef} className="absolute inset-0 z-0 will-change-transform">
         <video
@@ -343,12 +359,12 @@ function Hero() {
       <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/45 via-black/5 to-black/70" />
       <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.08)_52%,rgba(0,0,0,0.58)_100%)]" />
 
-      <div className="pointer-events-none relative z-20 max-w-[760px] text-left">
+      <div className="pointer-events-none relative z-20 max-w-[620px] text-left md:max-w-[680px]">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.1, ease }}
-          className="mb-5 max-w-[520px] font-sans text-[10px] uppercase tracking-[0.28em] text-[#C8A96A] md:text-[11px]"
+          className="mb-5 max-w-[520px] font-sans text-[10px] uppercase tracking-[0.28em] text-[#C8A96A] md:text-[10px]"
         >
           PRIVATE HOSPITALITY · BESPOKE TRAVEL · EXCLUSIVE ACCESS
         </motion.div>
@@ -357,7 +373,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease }}
-          className="apple-display mb-6 text-[50px] leading-[0.92] text-[#F6F1E8] md:text-[82px] lg:text-[104px]"
+          className="apple-display mb-6 text-[50px] leading-[0.92] text-[#F6F1E8] md:text-[70px] lg:text-[84px]"
         >
           RIEN N’EST TROP
           <br />
@@ -368,7 +384,7 @@ function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.3, ease }}
-          className="apple-copy max-w-xl text-[17px] leading-relaxed text-[#F6F1E8]/68 md:text-[22px]"
+          className="apple-copy max-w-[560px] text-[17px] leading-relaxed text-[#F6F1E8]/68 md:text-[18px] md:leading-[1.65]"
         >
           Une collection de lieux rares et d’expériences confidentielles, imaginée pour ceux qui font de l’excellence leur seule destination.
         </motion.p>
