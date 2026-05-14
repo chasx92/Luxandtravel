@@ -594,9 +594,9 @@ function SignaturesSection() {
 
 function PhoneMockup({ screen }: { screen: PhoneScreen }) {
   return (
-    <div className="relative mx-auto w-full max-w-[262px] rounded-[2.35rem] border border-white/15 bg-black p-2.5 shadow-[0_32px_90px_rgba(0,0,0,0.5)] md:max-w-[300px] md:rounded-[3rem] md:p-3 md:shadow-[0_40px_120px_rgba(0,0,0,0.58)]">
+    <div className="relative mx-auto w-full max-w-[226px] rounded-[2.1rem] border border-white/15 bg-black p-2 shadow-[0_28px_80px_rgba(0,0,0,0.48)] md:max-w-[300px] md:rounded-[3rem] md:p-3 md:shadow-[0_40px_120px_rgba(0,0,0,0.58)]">
       <div className="absolute left-1/2 top-4 z-20 h-5 w-20 -translate-x-1/2 rounded-full bg-black shadow-[0_0_0_1px_rgba(255,255,255,0.08)] md:top-5 md:h-6 md:w-24" />
-      <div className="relative min-h-[430px] overflow-hidden rounded-[1.95rem] border border-white/10 bg-[#0B0A08] px-4 pb-5 pt-14 md:min-h-[560px] md:rounded-[2.4rem] md:px-5 md:pb-6 md:pt-16">
+      <div className="relative min-h-[360px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0B0A08] px-4 pb-5 pt-13 md:min-h-[560px] md:rounded-[2.4rem] md:px-5 md:pb-6 md:pt-16">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(200,169,106,0.18),transparent_36%),linear-gradient(180deg,rgba(246,241,232,0.08),transparent_30%)]" />
         <AnimatePresence mode="wait">
           <motion.div
@@ -616,20 +616,20 @@ function PhoneMockup({ screen }: { screen: PhoneScreen }) {
             <p className="font-sans text-[10px] uppercase tracking-[0.28em] text-[#C8A96A]">
               {screen.eyebrow}
             </p>
-            <h3 className="apple-display mt-4 text-[34px] leading-none text-[#F6F1E8] md:mt-5 md:text-4xl">
+            <h3 className="apple-display mt-4 text-[29px] leading-none text-[#F6F1E8] md:mt-5 md:text-4xl">
               {screen.title}
             </h3>
-            <div className="mt-6 space-y-2.5 md:mt-8 md:space-y-3">
+            <div className="mt-5 space-y-2.5 md:mt-8 md:space-y-3">
               {screen.lines.map((line) => (
                 <div
                   key={line}
-                  className="rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3 font-sans text-[13px] leading-relaxed text-[#F6F1E8]/72 md:text-sm"
+                  className="rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-2.5 font-sans text-[12px] leading-relaxed text-[#F6F1E8]/72 md:py-3 md:text-sm"
                 >
                   {line}
                 </div>
               ))}
             </div>
-            <div className="mt-6 rounded-3xl border border-[#C8A96A]/25 bg-[#C8A96A]/10 p-4 md:mt-8 md:p-5">
+            <div className="mt-5 rounded-3xl border border-[#C8A96A]/25 bg-[#C8A96A]/10 p-4 md:mt-8 md:p-5">
               <p className="font-sans text-[10px] uppercase tracking-[0.28em] text-[#D8C7A3]/75">
                 Statut
               </p>
@@ -770,19 +770,31 @@ function ConciergeProcessSection() {
           </p>
         </motion.div>
 
-        <div className="mt-20 grid gap-16 md:mt-28 md:grid-cols-[0.85fr_1fr] md:gap-24">
+        <div className="mt-12 grid gap-16 md:mt-28 md:grid-cols-[0.85fr_1fr] md:gap-24">
           <div ref={phoneRef} className="hidden self-start md:sticky md:top-28 md:block">
             <PhoneMockup screen={steps[activeStep].phone} />
           </div>
 
-          <div className="relative space-y-14 md:space-y-[42vh] md:pb-[34vh] md:pl-10">
+          <div className="relative space-y-20 md:space-y-[42vh] md:pb-[34vh] md:pl-10">
+            <motion.div
+              className="sticky top-[76px] z-20 -mx-6 bg-gradient-to-b from-[#050505] via-[#050505]/95 to-[#050505]/78 px-6 pb-7 pt-3 backdrop-blur-sm md:hidden"
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.95, ease }}
+            >
+              <div className="mx-auto max-w-[260px]">
+                <PhoneMockup screen={steps[activeStep].phone} />
+              </div>
+            </motion.div>
+
             <div className="absolute left-0 top-0 hidden h-full w-px bg-white/10 md:block">
               <div ref={progressRef} className="h-full w-px origin-top scale-y-0 bg-[#C8A96A]/70" />
             </div>
             {steps.map((step, index) => (
               <motion.article
                 key={step.label}
-                className={`process-step transition-opacity duration-700 md:min-h-[44vh] ${
+                className={`process-step min-h-[44vh] transition-opacity duration-700 md:min-h-[44vh] ${
                   activeStep === index ? "md:opacity-100" : "md:opacity-28"
                 }`}
                 initial={{ opacity: 0, y: 32 }}
@@ -790,10 +802,7 @@ function ConciergeProcessSection() {
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{ duration: 0.9, ease }}
               >
-                <div className="md:hidden">
-                  <PhoneMockup screen={step.phone} />
-                </div>
-                <div className="mt-8 md:mt-0">
+                <div className="mt-0 md:mt-0">
                   <motion.p
                     className="font-sans text-xs uppercase tracking-[0.28em] text-[#C8A96A]"
                     initial={{ opacity: 0, x: -12 }}
@@ -880,13 +889,70 @@ function ParallaxExperiencesSection() {
           scrub: 1.6,
         },
       });
+
+      gsap.to(".mobile-experience-intro", {
+        opacity: 0.62,
+        scale: 0.965,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "45% top",
+          scrub: 1.4,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".mobile-parallax-card").forEach((card, index) => {
+        gsap.fromTo(
+          card,
+          {
+            y: 82,
+            opacity: 0.3,
+            scale: 0.94,
+            rotate: index % 2 === 0 ? -2 : 2,
+          },
+          {
+            y: -18,
+            opacity: 1,
+            scale: 1,
+            rotate: index % 2 === 0 ? 1 : -1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 92%",
+              end: "bottom 42%",
+              scrub: 1.15,
+            },
+          },
+        );
+      });
+
+      gsap.utils.toArray<HTMLElement>(".mobile-experience-image").forEach((image) => {
+        gsap.fromTo(
+          image,
+          { yPercent: -5, scale: 1.1 },
+          {
+            yPercent: 5,
+            scale: 1.04,
+            ease: "none",
+            scrollTrigger: {
+              trigger: image.parentElement,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.4,
+            },
+          },
+        );
+      });
     },
     { scope: sectionRef },
   );
 
   return (
-    <section ref={sectionRef} id="experiences" className="relative overflow-hidden bg-[#050505] py-20 md:min-h-[260vh] md:py-0">
-      <div className="relative z-10 flex min-h-[48vh] items-center justify-center px-6 text-center md:sticky md:top-0 md:h-screen">
+    <section ref={sectionRef} id="experiences" className="relative overflow-hidden bg-[#050505] md:min-h-[260vh]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[140vh] bg-[radial-gradient(circle_at_50%_18%,rgba(216,199,163,0.1),transparent_34%)] md:hidden" />
+
+      <div className="relative z-10 hidden min-h-[48vh] items-center justify-center px-6 text-center md:sticky md:top-0 md:flex md:h-screen">
         <motion.div
           className="relative z-10 mx-auto max-w-[760px] rounded-[2rem] bg-[#050505]/35 px-4 py-8 backdrop-blur-[2px] md:bg-transparent md:p-0 md:backdrop-blur-none"
           initial={{ opacity: 0, y: 26, scale: 0.985 }}
@@ -919,6 +985,53 @@ function ParallaxExperiencesSection() {
         </motion.div>
       </div>
 
+      <div className="relative z-10 md:hidden">
+        <div className="mobile-experience-intro sticky top-0 flex min-h-screen items-center justify-center px-6 pb-16 pt-24 text-center">
+          <motion.div
+            className="mx-auto max-w-[330px]"
+            initial={{ opacity: 0, y: 28, scale: 0.98 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 1.1, ease }}
+          >
+            <p className="font-sans text-[11px] uppercase tracking-[0.34em] text-[#C8A96A]">
+              EXPÉRIENCES
+            </p>
+            <h2 className="apple-display mt-7 text-[43px] leading-[1.03] text-[#F6F1E8]">
+              L’art de vivre,{" "}
+              <span className="text-[#D8C7A3]">en mouvement.</span>
+            </h2>
+            <p className="apple-copy mx-auto mt-8 max-w-[310px] text-[18px] leading-[1.65] text-[#F6F1E8]/58">
+              Une table, un voyage, une fête, une adresse que l’on ne trouve pas.
+            </p>
+            <a
+              href="#contact"
+              className="mt-9 inline-flex rounded-full border border-white/15 bg-white/[0.03] px-5 py-3 font-sans text-[13px] text-[#F6F1E8]/88 no-underline backdrop-blur-md transition-all duration-300 hover:border-[#C8A96A]/60 hover:text-[#D8C7A3]"
+            >
+              Voir les inspirations
+            </a>
+          </motion.div>
+        </div>
+
+        <div className="relative z-20 -mt-[23vh] space-y-[12vh] px-5 pb-28">
+          {experiences.map((item, index) => (
+            <div
+              key={item.label}
+              className={`mobile-parallax-card flex min-h-[54vh] items-center ${
+                index % 2 === 0 ? "justify-start" : "justify-end"
+              }`}
+            >
+              <MobileExperienceCard
+                label={item.label}
+                text={item.text}
+                image={item.image}
+                index={index}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="pointer-events-none absolute inset-0 z-0 mx-auto hidden max-w-7xl grid-cols-2 gap-4 px-6 pt-[34vh] md:grid md:gap-10 md:px-10 lg:px-16">
         <div className="parallax-left flex flex-col gap-6 md:-translate-x-20 md:gap-10">
           {experiences.slice(0, 3).map((item, index) => (
@@ -931,27 +1044,6 @@ function ParallaxExperiencesSection() {
           ))}
         </div>
       </div>
-
-      <motion.div
-        className="mx-auto grid max-w-3xl gap-4 px-6 md:hidden"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.12 }}
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.08 } },
-        }}
-      >
-        {experiences.map((item, index) => (
-          <MobileExperienceCard
-            key={item.label}
-            label={item.label}
-            text={item.text}
-            image={item.image}
-            index={index}
-          />
-        ))}
-      </motion.div>
     </section>
   );
 }
@@ -1021,37 +1113,36 @@ function MobileExperienceCard({
 
   return (
     <motion.article
-      variants={{
-        hidden: { opacity: 0, y: 28, scale: 0.98 },
-        visible: { opacity: 1, y: 0, scale: 1 },
-      }}
-      transition={{ duration: 0.95, ease }}
-      className="luxury-border relative overflow-hidden rounded-[1.45rem] bg-[#0B0A08] px-5 py-5"
+      className="luxury-border relative aspect-[4/5] w-[82vw] max-w-[322px] overflow-hidden rounded-[1.8rem] bg-[#0B0A08] shadow-[0_28px_90px_rgba(0,0,0,0.45)]"
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-85`} />
       <img
         src={image}
         alt=""
-        className="absolute inset-0 h-full w-full scale-105 object-cover opacity-38 saturate-[0.82]"
+        className="mobile-experience-image absolute inset-0 h-full w-full object-cover opacity-68 saturate-[0.78]"
       />
       <motion.div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(216,199,163,0.2),transparent_32%)]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_20%_14%,rgba(216,199,163,0.22),transparent_34%)]"
         animate={{ opacity: [0.45, 0.72, 0.45] }}
         transition={{ duration: 5 + index * 0.35, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/78 via-black/42 to-black/74" />
-      <div className="relative z-10 flex min-h-[132px] items-end justify-between gap-5">
-        <div>
-          <p className="font-sans text-[10px] uppercase tracking-[0.28em] text-[#C8A96A]/80">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/34 to-black/18" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+      <div className="relative z-10 flex h-full flex-col justify-between p-6">
+        <div className="flex items-center justify-between">
+          <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#C8A96A]/82">
             {String(index + 1).padStart(2, "0")}
           </p>
-          <h3 className="apple-display mt-4 text-[34px] leading-none text-[#F6F1E8]">
+          <span className="h-px w-10 bg-white/20" />
+        </div>
+        <div>
+          <h3 className="apple-display max-w-[240px] text-[38px] leading-[0.96] text-[#F6F1E8]">
             {label}
           </h3>
+          <p className="apple-copy mt-4 max-w-[220px] text-[14px] leading-6 text-[#F6F1E8]/62">
+            {text}
+          </p>
         </div>
-        <p className="apple-copy max-w-[138px] pb-1 text-right text-[13px] leading-5 text-[#F6F1E8]/56">
-          {text}
-        </p>
       </div>
     </motion.article>
   );
